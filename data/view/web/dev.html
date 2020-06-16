@@ -1,0 +1,126 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    {% from "templates/input.html" import input %}
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 style="font-size: 20px">光电管理</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">设备管理</a></li>
+                        <li class="breadcrumb-item active">光电</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    {% set info = dev %}
+    <!-- Main content -->
+    <section class="content">
+        <div id="infoEl" style="display:none;" info="{{ get_flashed_messages(category_filter=type)[0] }}"
+             type="{{ type }}"></div>
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <select class="form-control select2" style="width: 100%;">
+                                <option selected="selected">展区1</option>
+                                <option>展区2</option>
+                                <option>展区3</option>
+                                <option>展区4</option>
+                                <option>展区5</option>
+                            </select>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="config-tab" data-toggle="pill"
+                               href="#config" role="tab" aria-controls="config"
+                               aria-selected="true">配置</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="screen" role="tabpanel"
+                             aria-labelledby="config-tab">
+                            <form role="form" action="/bg/save" enctype="multipart/form-data" method="post">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>样式ID</label>
+                                        {{ input('sid',class="form-control",placeholder="请输入ID",value=info.sid) }}
+                                        {#                        <input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>图片</label>
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" name="pic"
+                                                       accept="image/*">
+                                                <label class="custom-file-label">{{ info.pic if info.pic else "选择图片" }}</label>
+                                            </div>
+                                            {#                            <div class="input-group-append">#}
+                                            {#                                <span class="input-group-text" >更新</span>#}
+                                            {#                            </div>#}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>视频</label>
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" name="video"
+                                                       accept="video/*">
+                                                <label class="custom-file-label">{{ info.video if info.video else "选择视频" }}</label>
+                                            </div>
+                                            {#                            <div class="input-group-append">#}
+                                            {#                                <span class="input-group-text" >更新</span>#}
+                                            {#                            </div>#}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary">保存选项</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+{% endblock %}
+{% block js %}
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>
+        window.bsCustomFileInput && bsCustomFileInput.init();
+        $('.select2').select2();
+        +function () {
+            var info = $("#infoEl")
+            var text = info.attr("info")
+            var type = info.attr("type")
+            //toastr[type](text)
+        }()
+    </script>
+{% endblock %}

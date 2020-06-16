@@ -1,0 +1,420 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da;
+        }
+
+        .pt-2.px-3 .input-group {
+            display: flex;
+            flex-direction: row;
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    {% from "templates/input.html" import input %}
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 style="font-size: 20px">主机管理</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">设备管理</a></li>
+                        <li class="breadcrumb-item active">主机</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    {% set info = dev %}
+    <!-- Main content -->
+    <section class="content">
+        <div id="infoEl" style="display:none;" info="{{ get_flashed_messages(category_filter=type)[0] }}"
+             type="{{ type }}"></div>
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <div class="input-group">
+                                <select class="form-control select2" style="flex:1 1 0%">
+                                    <option selected="selected">展区1</option>
+                                    <option>展区2</option>
+                                    <option>展区3</option>
+                                    <option>展区4</option>
+                                    <option>展区5</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-block btn-default btn-sm" id="addScreen"
+                                            data-toggle="modal" data-target="#modalConfig"><i class="fas fa-plus"></i>
+                                        主机
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill"
+                               href="#custom-tabs-four-home" role="tab" aria-controls="screen"
+                               aria-selected="true">列表</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="screen" role="tabpanel"
+                             aria-labelledby="custom-tabs-four-home-tab">
+                            <div id="contentList"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+    <div class="modal fade" id="modalConfig">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">新增屏幕</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form role="form" action="#" enctype="multipart/form-data" method="post">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>按钮名称：</label>
+                                {{ input('name',class="form-control",placeholder="请输入名称",value="") }}
+                                {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                            </div>
+                            <div class="form-group">
+                                <label>对应终端ID：</label>
+                                {{ input('devId',class="form-control",placeholder="请输入",value="") }}
+                                {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                            </div>
+                            <div class="form-group">
+                                <label>控制器：</label>
+                                {{ input('controller',class="form-control",placeholder="请输入",value="") }}
+                                {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="modalForm.submit()">保存</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+{% endblock %}
+{% block js %}
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/jsgrid/demos/db.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid-zh-cn.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>
+        //$("addScreen").click(function (e) {
+        //modalBtn
+        //})
+        $('.select2').select2()
+        jsGrid.locale("zh-cn");
+        var my_db = {
+
+            loadData: function (filter) {
+                return $.grep(this.clients, function (client) {
+                    return (!filter.Name || client.Name.indexOf(filter.Name) > -1)
+                        && (filter.Age === undefined || client.Age === filter.Age)
+                        && (!filter.Address || client.Address.indexOf(filter.Address) > -1)
+                        && (!filter.Country || client.Country === filter.Country)
+                        && (filter.Married === undefined || client.Married === filter.Married);
+                });
+            },
+
+            insertItem: function (insertingClient) {
+                this.clients.push(insertingClient);
+            },
+
+            updateItem: function (updatingClient) {
+            },
+
+            deleteItem: function (deletingClient) {
+                var clientIndex = $.inArray(deletingClient, this.clients);
+                this.clients.splice(clientIndex, 1);
+            }
+
+        };
+        my_db.clients = [
+            {
+                "index": 1,
+                "name": "主机1",
+                "devId": "PC1",
+                "controller": "01"
+            },
+            {
+                "index": 2,
+                "name": "主机2",
+                "devId": "PC2",
+                "controller": "02"
+            },
+            {
+                "index": 3,
+                "name": "主机3",
+                "devId": "PC3",
+                "controller": "03"
+            },
+            {
+                "index": 4,
+                "name": "主机4",
+                "devId": "PC4",
+                "controller": "04"
+            },
+            {
+                "index": 5,
+                "name": "主机5",
+                "devId": "PC5",
+                "controller": "05"
+            },
+            {
+                "index": 6,
+                "name": "主机6",
+                "devId": "PC6",
+                "controller": "06"
+            },
+            {
+                "index": 7,
+                "name": "主机7",
+                "devId": "PC7",
+                "controller": "07"
+            },
+            {
+                "index": 8,
+                "name": "主机8",
+                "devId": "PC8",
+                "controller": "08"
+            },
+            {
+                "index": 9,
+                "name": "主机9",
+                "devId": "PC9",
+                "controller": "09"
+            },
+            {
+                "index": 10,
+                "name": "主机10",
+                "devId": "PC10",
+                "controller": "10"
+            },
+            {
+                "index": 11,
+                "name": "主机11",
+                "devId": "PC11",
+                "controller": "11"
+            },
+            {
+                "index": 12,
+                "name": "主机12",
+                "devId": "PC12",
+                "controller": "12"
+            },
+            {
+                "index": 13,
+                "name": "名称13",
+                "devId": "设备13",
+                "controller": "13"
+            },
+            {
+                "index": 14,
+                "name": "主机14",
+                "devId": "PC14",
+                "controller": "14"
+            },
+            {
+                "index": 15,
+                "name": "主机15",
+                "devId": "PC15",
+                "controller": "15"
+            },
+            {
+                "index": 16,
+                "name": "主机16",
+                "devId": "PC16",
+                "controller": "16"
+            },
+            {
+                "index": 17,
+                "name": "主机17",
+                "devId": "PC17",
+                "controller": "17"
+            },
+            {
+                "index": 18,
+                "name": "主机18",
+                "devId": "PC18",
+                "controller": "18"
+            },
+            {
+                "index": 19,
+                "name": "主机19",
+                "devId": "PC19",
+                "controller": "19"
+            },
+            {
+                "index": 20,
+                "name": "主机20",
+                "devId": "PC20",
+                "controller": "20"
+            },
+            {
+                "index": 21,
+                "name": "主机21",
+                "devId": "PC21",
+                "controller": "21"
+            },
+            {
+                "index": 22,
+                "name": "名称22",
+                "devId": "设备22",
+                "controller": "22"
+            },
+            {
+                "index": 23,
+                "name": "主机23",
+                "devId": "PC23",
+                "controller": "23"
+            },
+            {
+                "index": 24,
+                "name": "主机24",
+                "devId": "PC24",
+                "controller": "24"
+            },
+            {
+                "index": 25,
+                "name": "主机25",
+                "devId": "PC25",
+                "controller": "25"
+            },
+            {
+                "index": 26,
+                "name": "主机26",
+                "devId": "PC26",
+                "controller": "26"
+            },
+            {
+                "index": 27,
+                "name": "主机27",
+                "devId": "PC27",
+                "controller": "27"
+            },
+            {
+                "index": 28,
+                "name": "主机28",
+                "devId": "PC28",
+                "controller": "28"
+            },
+            {
+                "index": 29,
+                "name": "主机29",
+                "devId": "PC29",
+                "controller": "29"
+            },
+            {
+                "index": 30,
+                "name": "主机30",
+                "devId": "PC30",
+                "controller": "30"
+            },
+            {
+                "index": 31,
+                "name": "主机31",
+                "devId": "PC31",
+                "controller": "31"
+            }
+        ];
+        var gridList = $("#contentList")
+        if (gridList.length > 0) {
+            gridList.jsGrid({
+                height: "100%",
+                width: "100%",
+                pageSize: 11,
+                paging: true,
+
+                data: my_db.clients,
+
+                sorting: true,
+                filtering: true,
+
+                fields: [
+                    {name: "index", type: "number", width: 50, title: "序号", align: "left"},
+                    {name: "name", type: "text", width: 150, title: "按钮名称", align: "center"},
+                    {name: "devId", type: "number", width: 150, title: "对应终端ID", align: "center"},
+                    {name: "controller", type: "number", width: 150, title: "控制组", align: "center"},
+                    {
+                        name: "opt", type: "text", title: "操作",
+                        width: 150,
+                        align: "center",
+                        readOnly: false,
+                        //filtering: false,
+                        disabled: false,
+                        inserting: false,
+                        editing: false,
+                        sorting: false,
+                        filterTemplate: function () {
+                            return ""
+                        },
+                        insertTemplate: function () {
+                            return ""
+                        },
+                        filterValue: function () {
+                            return ""
+                        },
+                        itemTemplate: function (value, item) {
+                            return $('<div class="btn-group">' +
+                                '<button type="button" class="btn btn-default" data-type="basic">修改</button>' +
+                                '<button type="button" class="btn btn-default" data-type="basic">删除</button>' +
+                                '<button type="button" class="btn btn-default" data-type="content">详情</button>' +
+                                '<button type="button" class="btn btn-default" data-type="link">关联</button>' +
+                                '</div>').on("click", "button",
+                                function (e) {
+                                    e.stopPropagation();
+                                    var el = $(this), type = el.data("type")
+                                    if (type == "content") {
+                                        window.location.href = "/content/theme"
+                                    }
+                                })
+                            //return $("<a>").attr("href", "/menu?id=" + 1).text("进入配置").css("padding", "9px 15px 9px 15px").click(
+                            //function (e) {
+                            //e.stopPropagation();
+                            //})
+                        }
+
+                    }
+                ]
+            });
+        }
+    </script>
+{% endblock %}

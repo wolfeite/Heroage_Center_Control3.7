@@ -1,0 +1,235 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da;
+        }
+
+        .pt-2.px-3 .input-group {
+            display: flex;
+            flex-direction: row;
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 style="font-size: 20px">主题内容</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">内容</a></li>
+                        <li class="breadcrumb-item active">主题</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <div class="input-group">
+                                <select class="form-control select2" style="flex:1 1 0%">
+                                    <option selected="selected">主题1</option>
+                                    <option>主题2</option>
+                                    <option>主题3</option>
+                                    <option>主题4</option>
+                                    <option>主题5</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-block btn-default btn-sm"><i
+                                            class="fas fa-plus"></i> 素材
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="video-tab" data-toggle="pill" href="#video" role="tab"
+                               aria-controls="video" aria-selected="true">视频</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="image-tab" data-toggle="pill" href="#image" role="tab"
+                               aria-controls="image" aria-selected="false">图片</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="web-tab" data-toggle="pill" href="#web" role="tab"
+                               aria-controls="web" aria-selected="false">网页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="welcome-tab" data-toggle="pill" href="#welcome" role="tab"
+                               aria-controls="screen" aria-selected="false">欢迎词</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="cover-tab" data-toggle="pill" href="#cover" role="tab"
+                               aria-controls="cover" aria-selected="false">封面</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="screen-image-tab" data-toggle="pill" href="#screen-image" role="tab"
+                               aria-controls="screen-image" aria-selected="false">屏保-图片</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="screen-video-tab" data-toggle="pill" href="#screen-video" role="tab"
+                               aria-controls="screen-video" aria-selected="false">屏保-视频</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="explain-text-tab" data-toggle="pill" href="#explain-text" role="tab"
+                               aria-controls="explain-text" aria-selected="false">解说词-文字</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="explain-voice-tab" data-toggle="pill" href="#explain-voice"
+                               role="tab" aria-controls="explain-voice" aria-selected="false">解说词-声音</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
+                            <div id="contentList"></div>
+                        </div>
+                        <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
+                            <div id="contentList1"></div>
+                        </div>
+                        <div class="tab-pane fade" id="web" role="tabpanel" aria-labelledby="web-tab">
+                            <div id="contentList2"></div>
+                        </div>
+                        <div class="tab-pane fade" id="welcome" role="tabpanel" aria-labelledby="welcome-tab">
+                            <div id="contentList3"></div>
+                        </div>
+                        <div class="tab-pane fade" id="cover" role="tabpanel" aria-labelledby="cover-tab">
+                            <div id="contentList4"></div>
+                        </div>
+                        <div class="tab-pane fade" id="screen-image" role="tabpanel" aria-labelledby="screen-image-tab">
+                            <div id="contentList5"></div>
+                        </div>
+                        <div class="tab-pane fade" id="screen-video" role="tabpanel" aria-labelledby="screen-video-tab">
+                            <div id="contentList6"></div>
+                        </div>
+                        <div class="tab-pane fade" id="explain-text" role="tabpanel" aria-labelledby="explain-text-tab">
+                            <div id="contentList7"></div>
+                        </div>
+                        <div class="tab-pane fade" id="explain-voice" role="tabpanel"
+                             aria-labelledby="explain-voice-tab">
+                            <div id="contentList8"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+{% endblock %}
+{% block js %}
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/jsgrid/demos/db.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid-zh-cn.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>
+        $('.select2').select2()
+
+        jsGrid.locale("zh-cn");
+        var gridList = $("#contentList")
+        var gridList1 = $("#contentList1")
+        var gridList2 = $("#contentList2")
+        var gridList3 = $("#contentList3")
+        var gridList4 = $("#contentList4")
+        var gridList5 = $("#contentList5")
+        var gridList6 = $("#contentList6")
+        var gridList7 = $("#contentList7")
+        var gridList8 = $("#contentList8")
+        if (gridList.length > 0) {
+            config = {
+                height: "100%",
+                width: "100%",
+                pageSize: 14,
+                paging: true,
+
+                data: db.clients,
+
+                sorting: true,
+                filtering: true,
+
+                fields: [
+                    {name: "Name", type: "text", width: 150},
+                    {name: "Age", type: "number", width: 50},
+                    {name: "Address", type: "text", width: 200},
+                    {name: "Country", type: "select", items: db.countries, valueField: "Id", textField: "Name"},
+                    {
+                        name: "opt", type: "text", title: "操作",
+                        width: 150,
+                        align: "center",
+                        readOnly: false,
+                        //filtering: false,
+                        disabled: false,
+                        inserting: false,
+                        editing: false,
+                        sorting: false,
+                        filterTemplate: function () {
+                            return ""
+                        },
+                        insertTemplate: function () {
+                            return ""
+                        },
+                        filterValue: function () {
+                            return ""
+                        },
+                        itemTemplate: function (value, item) {
+                            return $('<div class="btn-group">' +
+                                '<button type="button" class="btn btn-default" data-type="basic">修改</button>' +
+                                '<button type="button" class="btn btn-default" data-type="basic">删除</button>' +
+                                '<button type="button" class="btn btn-default" data-type="content">详情</button>' +
+                                '<button type="button" class="btn btn-default" data-type="link">关联</button>' +
+                                '</div>').on("click", "button",
+                                function (e) {
+                                    e.stopPropagation();
+                                    var el = $(this), type = el.data("type")
+                                    if (type == "content") {
+                                        window.location.href = "/content/theme"
+                                    }
+                                })
+                            //return $("<a>").attr("href", "/menu?id=" + 1).text("进入配置").css("padding", "9px 15px 9px 15px").click(
+                            //function (e) {
+                            //e.stopPropagation();
+                            //})
+                        }
+
+                    }
+                ]
+            }
+            gridList.jsGrid(config);
+            gridList1.jsGrid(config);
+            gridList2.jsGrid(config);
+            gridList3.jsGrid(config);
+            gridList4.jsGrid(config);
+            gridList5.jsGrid(config);
+            gridList6.jsGrid(config);
+            gridList7.jsGrid(config);
+            gridList8.jsGrid(config);
+        }
+    </script>
+{% endblock %}

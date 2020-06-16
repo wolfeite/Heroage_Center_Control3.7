@@ -1,0 +1,383 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da;
+        }
+
+        .pt-2.px-3 .input-group {
+            display: flex;
+            flex-direction: row;
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    {% from "templates/input.html" import input %}
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 style="font-size: 20px">光电管理</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">设备管理</a></li>
+                        <li class="breadcrumb-item active">光电</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    {% set info = dev %}
+    <!-- Main content -->
+    <section class="content">
+        <div id="infoEl" style="display:none;" info="{{ get_flashed_messages(category_filter=type)[0] }}"
+             type="{{ type }}"></div>
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <div class="input-group">
+                                <select class="form-control select2" style="flex:1 1 0%">
+                                    <option selected="selected">展区1</option>
+                                    <option>展区2</option>
+                                    <option>展区3</option>
+                                    <option>展区4</option>
+                                    <option>展区5</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-block btn-default btn-sm" id="addScreen"
+                                            data-toggle="modal" data-target="#modalConfig"><i class="fas fa-plus"></i>
+                                        光电
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill"
+                               href="#custom-tabs-four-home" role="tab" aria-controls="screen"
+                               aria-selected="true">列表</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="screen" role="tabpanel"
+                             aria-labelledby="custom-tabs-four-home-tab">
+                            <div id="contentList"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+    <div class="modal fade" id="modalConfig">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">新增屏幕</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form role="form" action="#" enctype="multipart/form-data" method="post">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>按钮名称：</label>
+                                {{ input('name',class="form-control",placeholder="请输入名称",value="") }}
+                                {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                            </div>
+                            <div class="form-group">
+                                <label>接口：</label>
+                                {{ input('interface',class="form-control",placeholder="请输入",value="") }}
+                                {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="modalForm.submit()">保存</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+{% endblock %}
+{% block js %}
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/jsgrid/demos/db.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid-zh-cn.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>
+        //$("addScreen").click(function (e) {
+        //modalBtn
+        //})
+        $('.select2').select2()
+        jsGrid.locale("zh-cn");
+        var my_db = {
+
+            loadData: function (filter) {
+                return $.grep(this.clients, function (client) {
+                    return (!filter.Name || client.Name.indexOf(filter.Name) > -1)
+                        && (filter.Age === undefined || client.Age === filter.Age)
+                        && (!filter.Address || client.Address.indexOf(filter.Address) > -1)
+                        && (!filter.Country || client.Country === filter.Country)
+                        && (filter.Married === undefined || client.Married === filter.Married);
+                });
+            },
+
+            insertItem: function (insertingClient) {
+                this.clients.push(insertingClient);
+            },
+
+            updateItem: function (updatingClient) {
+            },
+
+            deleteItem: function (deletingClient) {
+                var clientIndex = $.inArray(deletingClient, this.clients);
+                this.clients.splice(clientIndex, 1);
+            }
+
+        };
+        my_db.clients = [
+            {
+                "index": 1,
+                "name": "灯1",
+                "interface": "09|1",
+            },
+            {
+                "index": 2,
+                "name": "灯2",
+                "interface": "09|2"
+            },
+            {
+                "index": 3,
+                "name": "灯3",
+                "interface": "09|3"
+            },
+            {
+                "index": 4,
+                "name": "灯4",
+                "interface": "09|4"
+            },
+            {
+                "index": 5,
+                "name": "灯5",
+                "interface": "09|5"
+            },
+            {
+                "index": 6,
+                "name": "灯6",
+                "interface": "09|6"
+            },
+            {
+                "index": 7,
+                "name": "灯7",
+                "interface": "09|7"
+            },
+            {
+                "index": 8,
+                "name": "灯8",
+                "interface": "09|8"
+            },
+            {
+                "index": 9,
+                "name": "灯9",
+                "interface": "09|9"
+            },
+            {
+                "index": 10,
+                "name": "灯10",
+                "interface": "09|10"
+            },
+            {
+                "index": 11,
+                "name": "灯11",
+                "interface": "09|11"
+            },
+            {
+                "index": 12,
+                "name": "灯12",
+                "interface": "09|12"
+            },
+            {
+                "index": 13,
+                "name": "灯13",
+                "interface": "09|13"
+            },
+            {
+                "index": 14,
+                "name": "灯14",
+                "interface": "09|14"
+            },
+            {
+                "index": 15,
+                "name": "灯15",
+                "interface": "09|15"
+            },
+            {
+                "index": 16,
+                "name": "灯16",
+                "interface": "09|16"
+            },
+            {
+                "index": 17,
+                "name": "灯17",
+                "interface": "09|17"
+            },
+            {
+                "index": 18,
+                "name": "灯18",
+                "interface": "09|18"
+            },
+            {
+                "index": 19,
+                "name": "灯19",
+                "interface": "09|19"
+            },
+            {
+                "index": 20,
+                "name": "灯20",
+                "interface": "09|20"
+            },
+            {
+                "index": 21,
+                "name": "灯21",
+                "interface": "09|21"
+            },
+            {
+                "index": 22,
+                "name": "灯22",
+                "interface": "09|22"
+            },
+            {
+                "index": 23,
+                "name": "灯23",
+                "interface": "09|23"
+            },
+            {
+                "index": 24,
+                "name": "灯24",
+                "interface": "09|24"
+            },
+            {
+                "index": 25,
+                "name": "灯25",
+                "interface": "09|25"
+            },
+            {
+                "index": 26,
+                "name": "灯26",
+                "interface": "09|26"
+            },
+            {
+                "index": 27,
+                "name": "灯27",
+                "interface": "09|27"
+            },
+            {
+                "index": 28,
+                "name": "灯28",
+                "interface": "09|28"
+            },
+            {
+                "index": 29,
+                "name": "灯29",
+                "interface": "09|29"
+            },
+            {
+                "index": 30,
+                "name": "灯30",
+                "interface": "09|30"
+            },
+            {
+                "index": 31,
+                "name": "灯31",
+                "interface": "09|31"
+            }
+        ];
+        var gridList = $("#contentList")
+        if (gridList.length > 0) {
+            gridList.jsGrid({
+                height: "100%",
+                width: "100%",
+                pageSize: 11,
+                paging: true,
+
+                data: my_db.clients,
+
+                sorting: true,
+                filtering: true,
+
+                fields: [
+                    {name: "index", type: "number", width: 50, title: "序号", align: "left"},
+                    {name: "name", type: "text", width: 150, title: "按钮名称", align: "center"},
+                    {name: "interface", type: "number", width: 150, title: "接口", align: "center"},
+                    {
+                        name: "opt", type: "text", title: "操作",
+                        width: 150,
+                        align: "center",
+                        readOnly: false,
+                        //filtering: false,
+                        disabled: false,
+                        inserting: false,
+                        editing: false,
+                        sorting: false,
+                        filterTemplate: function () {
+                            return ""
+                        },
+                        insertTemplate: function () {
+                            return ""
+                        },
+                        filterValue: function () {
+                            return ""
+                        },
+                        itemTemplate: function (value, item) {
+                            return $('<div class="btn-group">' +
+                                '<button type="button" class="btn btn-default" data-type="basic">修改</button>' +
+                                '<button type="button" class="btn btn-default" data-type="basic">删除</button>' +
+                                '<button type="button" class="btn btn-default" data-type="content">详情</button>' +
+                                '<button type="button" class="btn btn-default" data-type="link">关联</button>' +
+                                '</div>').on("click", "button",
+                                function (e) {
+                                    e.stopPropagation();
+                                    var el = $(this), type = el.data("type")
+                                    if (type == "content") {
+                                        window.location.href = "/content/theme"
+                                    }
+                                })
+                            //return $("<a>").attr("href", "/menu?id=" + 1).text("进入配置").css("padding", "9px 15px 9px 15px").click(
+                            //function (e) {
+                            //e.stopPropagation();
+                            //})
+                        }
+
+                    }
+                ]
+            });
+        }
+    </script>
+{% endblock %}
