@@ -69,7 +69,9 @@
                 spinner.stop();
                 var info = response.msg || '数据加载成功!'
                 console.log("同步结果：", info, response)
-                con.tip && toastr.success(info)
+                if (con.tip) {
+                    response.success ? toastr.success(info) : toastr.error(info)
+                }
                 resolve && resolve(response)
             }).fail(function (e) {
                 spinner.stop();
@@ -108,9 +110,9 @@
     toastr.options = {
         "positionClass": "toast-top-center",
         "showDuration": "300",
-        "hideDuration": "1000",
+        "hideDuration": "500",
         "progressBar": true,
-        "timeOut": "3000"
+        "timeOut": "1000"
     }
 }(jQuery)
 

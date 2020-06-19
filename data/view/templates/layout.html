@@ -80,6 +80,9 @@
                 </div>
             </div>
 
+            {% set asideData = request.app["aside"] if request.app["aside"] else aside %}
+            {% set paths = request.path.split('/') | parserPath() %}
+            {% set pathsName = request.app["pathsName"] %}
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu"
@@ -89,7 +92,6 @@
                     {% block sideLeft %}
                         {% set branch = request.cookies.get("branch") or 0 %}
                         {% set leave= request.cookies.get("leave") or 0 %}
-                        {% set asideData = request.app["aside"] if request.app["aside"] else aside%}
                         {% for val in asideData %}
                             {% with index= loop.index - 1 %}
                                 {% set hasItem = val.item and val.item | length() >0 %}
@@ -194,6 +196,24 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 style="font-size: 18px">{{ pathsName[pathsName | length() - 1] if not catalog else catalog }}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            {% for pName in pathsName %}
+                                <li class="breadcrumb-item"><a href="#">{{ pName }}</a></li>
+                            {% endfor %}
+                            {#                            <li class="breadcrumb-item active">{{ request.app["pathsName"] }}</li>#}
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
         {% block content %}{% endblock %}
     </div>
     <!-- /.content-wrapper -->

@@ -10,7 +10,7 @@ ASIDE = [
                 "url": "/dev/lamp"
             },
             {
-                "title": "主机管理",
+                "title": "设备组管理",
                 "url": "/dev/host"
             },
             {
@@ -29,18 +29,19 @@ ASIDE = [
         "item": []
     },
     {"title": "权限管理", "url": "/rights"},
-    {"title": "系统设置", "url": "/set",
-     "item": [
-         {
-             "title": "主题管理",
-             "url": "/set/theme"
-         },
-         {
-             "title": "展区管理",
-             "url": "/set/exhibit"
-         },
-     ]
-     },
+    {
+        "title": "系统设置", "url": "/set",
+        "item": [
+            {
+                "title": "展区管理",
+                "url": "/set/exhibit"
+            },
+            {
+                "title": "主题管理",
+                "url": "/set/theme"
+            }
+        ]
+    },
     {"title": "素材管理", "url": "/material"}
 
     #     {

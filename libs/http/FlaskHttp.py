@@ -1,3 +1,8 @@
+# Author: 骆琦（wolfeite）
+# Corp: 朗迹
+# StartTime:2020.5.28
+# Version:1.0：http_flask通用接口
+
 from flask import Flask, Blueprint, request, render_template, redirect, current_app, flash, make_response, abort, g, \
     send_from_directory
 import time

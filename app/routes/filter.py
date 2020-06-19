@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, abort, g
+from flask import Flask, render_template, request, abort, g, redirect
 from libs.request import Params
 
-def requester(request):
-    with Params(request, ["name", "age", "sex"]) as res:
-        request.role = res
-        print(">>>>>requester:", request.path, request.role.params["name"], res)
+def requester(request, params=[]):
+    with Params(request, params) as res:
+        request.params = res.params
+        print(">>>>>requester:", request.path, request.params["name"], res)
 
 def filterPath(request, other=None):
     path = request.path
@@ -15,26 +15,46 @@ def filter(flaskApp, **f):
     print("app>>>>>>>httpServer", flaskApp)
     # g.root_path = flaskApp.root_path
     @flaskApp.before_request
-    def auther():
+    def parser():
+        staticAside = flaskApp.config["ASIDE"]
         request.app = {}
-        request.app["aside"] = flaskApp.config["ASIDE"]
+        request.app["aside"] = staticAside
         request.app["root"] = flaskApp.root_path
+        request.app["pathsName"] = []
+
+        for val in staticAside:
+            request.path.startswith(val["url"]) and request.app["pathsName"].append(val["title"])
+            if val.get("item") and len(val["item"]) > 0:
+                for cval in val["item"]:
+                    request.path.startswith(cval["url"]) and request.app["pathsName"].append(cval["title"])
+
+    @flaskApp.before_request
+    def auther():
+        path = request.path
         if filterPath(request, "/sign"):
             return None
 
         # if request.path == "/favicon.ico":
         #     # abort(200)
-        if request.path == "/login":
-            return None
-            print("登入页")
-        print("app请求前置处理器auther:》》》》", request.path)
+        if path == "/" or path == "/index":
+            return redirect("/dev")
         return None
 
     @flaskApp.before_request
     def params():
         if filterPath(request, "/sign"):
             return None
-        requester(request)
+        path = request.path
+        routeRoot = path.split("/", 3)[1]
+        list = {
+            "set": ["id", "number", "name"],
+            "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay", "style", "offset_x",
+                    "offset_y", "scale", "grouped"]
+        }
+        paramsList = list.get(routeRoot)
+        paramsList = paramsList if paramsList else []
+        print(">>>>获取参数数组", paramsList, routeRoot)
+        requester(request, paramsList)
         # 1 / 0
         print("app请求前置处理器》》》》params:", request.path)
         return None

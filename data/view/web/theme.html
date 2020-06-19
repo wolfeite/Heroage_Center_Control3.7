@@ -1,0 +1,74 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <button type="button" class="btn btn-block btn-default btn-sm" id="addExhibit"
+                                    data-toggle="modal" data-target="#modalConfig"><i class="fas fa-plus"></i>
+                                新增
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tables-tab" data-toggle="pill"
+                               href="#custom-tabs-four-home" role="tab" aria-controls="tables"
+                               aria-selected="true">列表</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="tables" role="tabpanel"
+                             aria-labelledby="tables-tab">
+                            <div id="jsGrid1"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+{% endblock %}
+{% block js %}
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/jsgrid/demos/db.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
+    <script>
+        if ($("#jsGrid1").length > 0) {
+            $("#jsGrid1").jsGrid({
+                height: "100%",
+                width: "100%",
+
+                sorting: true,
+                paging: true,
+
+                data: db.clients,
+
+                fields: [
+                    {name: "Name", type: "text", width: 150},
+                    {name: "Age", type: "number", width: 50},
+                    {name: "Address", type: "text", width: 200},
+                    {name: "Country", type: "select", items: db.countries, valueField: "Id", textField: "Name"},
+                    {name: "Married", type: "checkbox", title: "Is Married"}
+                ]
+            });
+        }
+    </script>
+{% endblock %}

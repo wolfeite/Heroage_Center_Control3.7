@@ -1,0 +1,239 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {% from "templates/input.html" import input %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <button type="button" class="btn btn-block btn-default btn-sm" id="addBtn"
+                                    data-toggle="modal" data-target="#addModal"><i class="fas fa-plus"></i>
+                                新增
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tables-tab" data-toggle="pill"
+                               href="#custom-tabs-four-home" role="tab" aria-controls="tables"
+                               aria-selected="true">列表</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="tables" role="tabpanel"
+                             aria-labelledby="tables-tab">
+                            <div id="jsGrid1"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+    {% from "templates/operateModal.html" import addModal,updateModal,delModal %}
+    {% macro formModal(prefix="_") %}
+        <form role="form" action="#" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="id" value=""/>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>序号：</label>
+                    {{ input('number',class="form-control",placeholder="请输入",value="") }}
+                    {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                </div>
+                <div class="form-group">
+                    <label>名称：</label>
+                    {{ input('name',class="form-control",placeholder="请输入",value="") }}
+                    {#<input type="text" class="form-control" id="db_sid" name="sid" placeholder="请输入ID">#}
+                </div>
+            </div>
+        </form>
+    {% endmacro %}
+
+    {% call addModal() %}
+        {{ formModal() }}
+    {% endcall %}
+
+    {% call updateModal() %}
+        {{ formModal() }}
+    {% endcall %}
+    {% call delModal() %}
+        <p>该展厅的所有相关配置都将删除！</p>
+        <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
+            <input type="hidden" name="id" value=""/>
+        </form>
+    {% endcall %}
+
+{% endblock %}
+{% block js %}
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid-zh-cn.js') }}"></script>
+    <script>
+
+        var addForm = $("#addModal form")
+        var addOpt = $("#addOpt")
+        var addOptClose = $("#addOptClose")
+
+        var updateForm = $("#updateModal form")
+        var updateOpt = $("#updateOpt")
+        var updateOptClose = $("#updateOptClose")
+        var updateModalBtn = $("#updateModalBtn")
+
+        var delForm = $("#delModal form")
+        var delOpt = $("#delOpt")
+        var delOptClose = $("#delOptClose")
+        var delModalBtn = $("#delModalBtn")
+
+        jsGrid.locale("zh-cn");
+        var gridList = $("#jsGrid1")
+        var controller = {
+            loadData: function (filterRow) {
+                console.log("》》》》loadData", controller.clients, controller.clients.length, controller, filterRow)
+                //return controller.clients
+                return $.grep(controller.clients, function (row) {
+                    var res = true
+                    for (var i in filterRow) {
+                        filterVal = filterRow[i], val = row[i]
+                        filterVal = typeof filterVal == "string" ? filterVal.trim() : filterVal
+                        val = typeof val == "string" ? val.trim() : val
+                        if (filterVal !== "" && filterVal !== undefined && filterVal !== null) {
+                            res = val.indexOf ? val.indexOf(filterVal) > -1 : val == filterVal
+                        }
+                    }
+                    return res
+                });
+            },
+            clients: []
+        }
+        var fields = [
+            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "number", type: "number", width: 30, align: "left", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
+            {
+                name: "opt", type: "text", title: "操作",
+                width: 160,
+                align: "center",
+                readOnly: false,
+                //filtering: false,
+                //visible: false,
+                disabled: false,
+                inserting: false,
+                editing: false,
+                sorting: false,
+                filterTemplate: function () {
+                    return $('<div>' +
+                        '<a href="#" class="fas fa-search" style="font-size:18px;align-text:center;line-height:32px;" data-type="search"></a>' +
+                        '<a href="#" class="fas fa-share mr-1" style="font-size:18px;align-text:center;line-height:32px; margin-left:5px" data-type="back"></a>' +
+                        '</div>').on("click", "a", function (e) {
+                        e.stopPropagation();
+                        var $e = $(this), type = $e.data("type")
+                        type == "back" ? gridList.jsGrid("clearFilter").done(function () {
+                            console.log("清空搜索条件完成");
+                        }) : gridList.jsGrid("loadData");
+                        //console.log("搜索。。。", arguments[0], arguments[1], $(this).data("type"))
+                    })
+                },
+                insertTemplate: function () {
+                    return ""
+                },
+                filterValue: function () {
+                    return ""
+                },
+                itemTemplate: function (value, item) {
+                    return $('<div class="btn-group">' +
+                        '<button type="button" class="btn btn-default" data-type="update">修改</button>' +
+                        '<button type="button" class="btn btn-default" data-type="delete">删除</button>' +
+                        '</div>').on("click", "button",
+                        function (e) {
+                            e.stopPropagation();
+                            var $el = $(this), type = $el.data("type")
+                            if (type == "update") {
+                                updateModalBtn.trigger("click")
+                                updateForm.find("[name='id']").val(item.id)
+                                updateForm.find("[name='number']").val(item.number)
+                                updateForm.find("[name='name']").val(item.name)
+                            } else if (type == "delete") {
+                                delModalBtn.trigger("click")
+                                delForm.find("[name='id']").val(item.id)
+                            }
+
+                            //$.request({url: "/set/exhibit/add", data: {name: "大厅", number: 3}}, function (res) {
+                            //controller.clients = res.data
+                            //gridList.jsGrid("loadData");
+                            //})
+                        })
+                }
+
+            }
+        ]
+
+        gridList.jsGrid({
+            height: "690",
+            width: "100%",
+            pageSize: 11,
+            paging: true,
+            //pageButtonCount: 5,
+            deleteConfirm: "确定要删除吗",
+            loadMessage: "正在装载数据，请稍候......",
+            sorting: true,
+            filtering: true,
+            //data: db.clients,
+            controller: controller,
+            fields: fields
+        });
+
+        //查询
+        $.request({url: "/set/exhibit/list"}, function (res) {
+            controller.clients = res.data
+            console.log("》》》》????", controller.clients)
+            gridList.jsGrid("loadData");
+        })
+
+        //新增
+        addOpt.on("click", function (e) {
+            var params = addForm.serialize()
+            $.request({url: "/set/exhibit/add", data: params, type: "post", tip: true}, function (res) {
+                controller.clients = res.data
+                console.log("》》》》????", controller.clients)
+                gridList.jsGrid("loadData");
+                addOptClose.trigger("click")
+            })
+        })
+        //修改
+        updateOpt.on("click", function (e) {
+            var params = updateForm.serialize()
+            $.request({url: "/set/exhibit/update", data: params, type: "post", tip: true}, function (res) {
+                controller.clients = res.data
+                console.log("》》》》????", controller.clients)
+                gridList.jsGrid("loadData");
+                updateOptClose.trigger("click")
+            })
+        })
+        //删除
+        delOpt.on("click", function (e) {
+            var params = delForm.serialize()
+            $.request({url: "/set/exhibit/del", data: params, type: "post", tip: true}, function (res) {
+                controller.clients = res.data
+                console.log("》》》》????", controller.clients)
+                gridList.jsGrid("loadData");
+                delOptClose.trigger("click")
+            })
+        })
+    </script>
+{% endblock %}
