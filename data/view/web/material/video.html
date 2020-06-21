@@ -40,13 +40,13 @@
                     <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
                         <li class="pt-2 px-3">
                             <div class="input-group" style="width:200px">
-                                <select class="form-control select2" style="flex:1 1 0%" id="exhibitSelector">
+                                <select class="form-control select2" style="flex:1 1 0%" id="sortSelector">
                                     <option selected="selected">展区1</option>
                                 </select>
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-block btn-default btn-sm" id="addBtn"
                                             data-toggle="modal" data-target="#addModal"><i class="fas fa-plus"></i>
-                                        光电
+                                        视频
                                     </button>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
     {% macro formModal(prefix="_") %}
         <form role="form" action="#" enctype="multipart/form-data" method="post">
             <input type="hidden" name="id" value=""/>
-            <input type="hidden" name="exhibit" value=""/>
+            <input type="hidden" name="label" value=""/>
             <div class="card-body">
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">序号：</label>
@@ -85,9 +85,16 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">接口：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="port">
+                    <label class="col-sm-2 col-form-label">视频：</label>
+                    <div class="input-group col-sm-10">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="path" accept="video/*">
+                            {#                            <label class="custom-file-label">{{ info.video if info.video else "选择视频" }}</label>#}
+                            <label class="custom-file-label">{{ "选择视频" }}</label>
+                        </div>
+                        {#                            <div class="input-group-append">#}
+                        {#                                <span class="input-group-text" >更新</span>#}
+                        {#                            </div>#}
                     </div>
                 </div>
                 <div class="form-group row">
@@ -96,64 +103,18 @@
                         <input type="text" class="form-control" placeholder="请输入" value="" name="name">
                     </div>
                 </div>
-                <div class="form-group clearfix">
-                    <label style="margin-right:22px">类型：</label>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}typeRadio1" name="type" value=0>
-                        <label for="{{ prefix }}typeRadio1">灯光</label>
-                    </div>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}typeRadio2" name="type" value=1>
-                        <label for="{{ prefix }}typeRadio2">设备</label>
-                    </div>
-                </div>
-                <div class="form-group clearfix">
-                    <label style="margin-right:22px">显示：</label>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}displayRadio1" name="display" value=0>
-                        <label for="{{ prefix }}displayRadio1">否&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                    </div>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}displayRadio2" name="display" value=1>
-                        <label for="{{ prefix }}displayRadio2">是&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">延迟：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="delay">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">样式：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="style">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">偏移X：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="offset_x">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">偏移Y：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="offset_y">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">缩放：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="scale">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">所属组：</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="grouped">
-                    </div>
-                </div>
+                {#                <div class="form-group row">#}
+                {#                    <label class="col-sm-2 col-form-label">大小：</label>#}
+                {#                    <div class="col-sm-10">#}
+                {#                        <input type="text" class="form-control" placeholder="请输入" value="" name="size" disabled>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="form-group row">#}
+                {#                    <label class="col-sm-2 col-form-label">时长：</label>#}
+                {#                    <div class="col-sm-10">#}
+                {#                        <input type="text" class="form-control" placeholder="请输入" value="" name="time" disabled>#}
+                {#                    </div>#}
+                {#                </div>#}
             </div>
         </form>
     {% endmacro %}
@@ -168,44 +129,37 @@
         <p>该展厅的所有相关配置都将删除！</p>
         <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
             <input type="hidden" name="id" value=""/>
-            <input type="hidden" name="exhibit" value=""/>
+            <input type="hidden" name="label" value=""/>
         </form>
     {% endcall %}
 
 {% endblock %}
 {% block js %}
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
+    <!-- bs-custom-file-input -->
+    <script src="{{ url_for('static',filename='plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
     <!-- jsGrid -->
     <script src="{{ url_for('static',filename='plugins/jsgrid/demos/db.js') }}"></script>
     <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
     <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid-zh-cn.js') }}"></script>
-    <!-- Select2 -->
-    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='app/dev.js') }}"></script>
+    <script src="{{ url_for('static',filename='app/material.js') }}"></script>
     <script>
         var url = {
-            list: "/dev/lamp/list",
-            add: "/dev/lamp/add",
-            update: "/dev/lamp/update",
-            del: "/dev/lamp/del"
+            list: "/material/video/list",
+            add: "/material/video/add",
+            update: "/material/video/update",
+            del: "/material/video/del"
         }
-
         var columns = [
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
-            {name: "exhibit", type: "number", width: 30, align: "left", title: "展厅", visible: false},
+            {name: "label", type: "number", width: 30, align: "left", title: "展厅", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
-            {name: "port", type: "number", width: 50, align: "center", title: "接口"},
             {name: "name", type: "text", width: 160, align: "center", title: "名称"},
-            {name: "type", type: "text", width: 80, align: "center", title: "灯光0/设备1"},
-            {name: "display", type: "text", width: 80, align: "center", title: "隐藏0/显示1"},
-            {name: "delay", type: "number", width: 50, align: "center", title: "延迟", visible: false},
-            {name: "style", type: "text", width: 50, align: "center", title: "样式", visible: false},
-            {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
-            {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
-            {name: "scale", type: "number", width: 50, align: "center", title: "缩放", visible: false},
-            {name: "grouped", type: "number", width: 50, align: "center", title: "所属组", visible: false}
+            {name: "path", type: "text", width: 160, align: "center", title: "路径", visible: false},
+            {name: "size", type: "number", width: 100, align: "center", title: "大小(M)"},
+            {name: "time", type: "number", width: 100, align: "center", title: "时长"}
         ]
-
-        createDevApp(columns, url)
-
+        createMaterialApp(columns, url)
     </script>
 {% endblock %}

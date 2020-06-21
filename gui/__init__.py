@@ -33,13 +33,14 @@ class Gui(Ui_UI):
         try:
             # icon_dir = Path("gui")
             # url = "{0}{2}{1}{3}{1}{4}{1}{5}".format(icon_dir.path["base"], icon_dir.path["sep"], "UI", "Data", "Assets", "icon.png")
-            icon_dir = Path("data")
-            url = "{0}{2}{1}{3}{1}{4}".format(icon_dir.path["base"], icon_dir.path["sep"], "statics", "images",
-                                              "icon.png")
+            icon_dir = Path(("data", "statics", "images"))
+            # url = "{0}{2}{1}{3}{1}{4}".format(icon_dir.path["base"], icon_dir.path["sep"], "statics", "images",
+            #                                   "icon.png")
+            url = icon_dir.join(icon_dir.dir, "icon.png")
             print(">>>>url", url)
             self.icon.setIcon(QIcon(url))
         except Exception as err:
-            print("【err】【Gui ->set_icon】 icon图片文件错误")
+            print("【err】【Gui ->set_icon】 icon图片文件错误", err)
 
     def set_menus(self):
         self.menu = {}

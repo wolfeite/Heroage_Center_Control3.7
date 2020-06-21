@@ -1,4 +1,4 @@
-from .routes import filter, dev, content, rights, down, set
+from .routes import filter, dev, content, rights, down, set, material
 
 def config_jinja(app):
     app.flask.add_template_global(app.config["ASIDE"], 'aside')
@@ -12,15 +12,70 @@ def config_jinja(app):
 
 def config_db(app):
     db = app.attr["db"]
+    # >>>>set
     exhibit = db.model("exhibit", {
         "id": "integer not null primary key autoincrement unique",
-        "number": "integer not null",
+        "number": "integer default 1",
         "name": "text"
     })
+    theme = db.model("theme", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+    })
+    label = db.model("label", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+    })
+
+    # >>>>material
+    video = db.model("video", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+        # "label": "int default 0 references label(id) on delete set default",
+        "path": "text",
+        "label": "int references label(id) on delete set null",
+        "size": "text",
+        "time": "text"
+    })
+    image = db.model("image", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+        "label": "int default 0 references label(id) on delete set default",
+        "size": "float default 0"
+    })
+    pdf = db.model("pdf", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+        "label": "int default 0 references label(id) on delete set default",
+        "size": "float default 0"
+    })
+    ppt = db.model("ppt", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+        "label": "int default 0 references label(id) on delete set default",
+        "size": "float default 0"
+    })
+    voice = db.model("voice", {
+        "id": "integer not null primary key autoincrement unique",
+        "number": "integer default 1",
+        "name": "text not null",
+        "label": "int default 0 references label(id) on delete set default",
+        "size": "float default 0",
+        "time": "float default 0"
+    })
+
+    # >>>>dev
     lamp = db.model("lamp", {
         "id": "integer not null primary key autoincrement unique",
         "exhibit": "int not null references exhibit(id) on delete cascade",
-        "number": "integer not null",
+        # "exhibit": "int default 0 references exhibit(id) on delete set default",
+        "number": "integer default 1",
         "port": "int not null unique",
         "name": "text not null",
         "type": "boolean not null",
@@ -44,3 +99,4 @@ def config_app(app):
     app.register_router("rights", __name__, rights.add_route, url_prefix="/rights")
     app.register_router("down", __name__, down.add_route, url_prefix="/down")
     app.register_router("set", __name__, set.add_route, url_prefix="/set")
+    app.register_router("material", __name__, material.add_route, url_prefix="/material")

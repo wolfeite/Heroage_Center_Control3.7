@@ -4,36 +4,76 @@ import os
 import datetime
 import random
 import fitz
+from moviepy.editor import VideoFileClip
 
 class Path():
-    def __init__(self, baseDir=""):
-        self.path = {"sep": os.sep}
+    def __init__(self, dir=""):
+        self.sep = os.sep
         self.set_path_root()
-        baseDir and self.set_path_base(baseDir)
+        self.dir = dir
     def set_path_root(self):
-        pathArr = os.path.abspath(sys.argv[0]).split(self.path["sep"])
-        self.path["enter"] = pathArr.pop()
-        self.path["root"] = "{}{}".format(self.path["sep"].join(pathArr), self.path["sep"])
+        pathArr = os.path.abspath(sys.argv[0]).split(self.sep)
+        self.enter = pathArr.pop()
+        self.root = self.sep.join(pathArr)
+        print("Path对象路径分析：入口文件{0}，项目根路径{1}".format(self.enter, self.root))
 
-    def set_path_base(self, dir):
-        self.set_path("base", dir)
+    def __getitem__(self, item):
+        '''内置方法, 当使用obj['name']的形式的时候, 将调用这个方法, 这里返回的结果就是值'''
+        return getattr(self, item)
 
-    def set_path_json(self, dir):
-        self.set_path("json", dir, self.path["base"])
+    @property
+    def dir(self):
+        return self.path
 
-    def set_path(self, name, dir, root=""):
-        path = self.path
-        root = root or path["root"]
-        self.path[name] = "{1}{2}{0}".format(path["sep"], root, dir)
+    @dir.setter
+    def dir(self, dirName):
+        self.set_dir(dirName)
+
+    def set_dir(self, dir, root=None):
+        print("set_dir>>>", dir, isinstance(dir, (list, tuple)))
+        self.path = self.merge(root or self.root, *dir) if isinstance(dir, (list, tuple)) else self.merge(
+            root or self.root, dir)
+
+    def merge(self, *args):
+        print("merge>>>>>", args)
+        return self.sep.join(args)
+
+    @classmethod
+    def join(cls, *args):
+        # 注意加入self.sep将会重置路径
+        return os.path.join(*args)
 
 class File():
     def __init__(self, baseDir):
-        self.base = Path(baseDir).path["base"]
+        self.path = Path(baseDir)
+
+    @property
+    def dir(self):
+        return self.path.dir
+
+    def size(self, fileName):
+        file = fileName
+        if isinstance(file, (list, tuple)):
+            file = self.path.join(*fileName)
+        file_byte = os.path.getsize(self.path.join(self.dir, file))
+        return self.sizeConvert(file_byte)
+
+    @classmethod
+    def sizeConvert(cls, size):  # 单位换算
+        K, M, G = 1024, 1024 ** 2, 1024 ** 3  # Bytes
+        if size >= G:
+            return str(round(size / G, 3)) + 'GB'
+        elif size >= M:
+            return str(round(size / M, 3)) + 'MB'
+        elif size >= K:
+            return str(round(size / K, 3)) + 'KB'
+        else:
+            return str(round(size, 3)) + 'B'
 
     def read(self, fileName):
         if not fileName:
             return False
-        url = os.path.join(self.base, fileName)
+        url = os.path.join(self.dir, fileName)
         self.url = url
         with open(url, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -57,11 +97,11 @@ class File():
     def write(self, fileName=""):
         if (not fileName):
             return False
-        url = os.path.join(self.base, fileName)
+        url = os.path.join(self.dir, fileName)
         self._wr(url)
 
     def named(self, type):
-        type = type if type.startswith(".") else "."+ type
+        type = type if type.startswith(".") else "." + type
         return datetime.datetime.now().strftime('%Y%m%d%H%M%S') + str(random.randint(0, 999)) + type
 
     def up(self, request, input_name, dir="", size=0):
@@ -74,7 +114,10 @@ class File():
                     return False
                 ftype = '.' + filename.rsplit('.', 1)[1]
                 file = datetime.datetime.now().strftime('%Y%m%d%H%M%S') + str(random.randint(0, 999)) + ftype
-                file_path = os.path.join(self.base, dir, file)
+                dir_Path = os.path.join(self.dir, dir)
+                if not os.path.exists(dir_Path):
+                    os.makedirs(dir_Path)
+                file_path = os.path.join(dir_Path, file)
                 print(file_path)
                 fi.save(file_path)
                 fsize = os.stat(file_path).st_size
@@ -95,12 +138,12 @@ class File():
         return self.up(request, input_name, dir, size) if allowed else False
 
     def pdf2img(self, fileName, src_dir, store_dir=""):
-        doc = fitz.open(os.path.join(self.base, src_dir, fileName))  # 打开一个PDF文件，doc为Document类型，是一个包含每一页PDF文件的列表
+        doc = fitz.open(os.path.join(self.dir, src_dir, fileName))  # 打开一个PDF文件，doc为Document类型，是一个包含每一页PDF文件的列表
         if not doc.isPDF:
             return False
         store_dir = src_dir if not store_dir else store_dir
         fileName = fileName.split(".")[0]
-        target = os.path.join(self.base, store_dir, fileName)
+        target = os.path.join(self.dir, store_dir, fileName)
 
         trans = fitz.Matrix(1, 1).preRotate(0)
         pm = doc[0].getPixmap(matrix=trans, alpha=False)
@@ -135,9 +178,35 @@ class File():
         return fileNames
 
     def remove(self, dir, fileName):
-        path = os.path.join(self.base, dir, fileName)
+        path = os.path.join(self.dir, dir, fileName)
         os.path.exists(path) and os.remove(path)
 
     def removes(self, dir, arrs):
         for fileName in arrs:
             self.removeImg(dir, fileName)
+
+class Movie(File):
+    def __init__(self, baseDir):
+        super(Movie, self).__init__(baseDir)
+
+    def time(self, fileName):
+        file = fileName
+        if isinstance(file, (list, tuple)):
+            file = self.path.join(*fileName)
+        clip = VideoFileClip(self.path.join(self.dir, file))
+        file_time = self.timeConvert(clip.duration)
+        return file_time
+
+    @classmethod
+    def timeConvert(cls, size):  # 单位换算
+        M, H = 60, 60 ** 2
+        if size < M:
+            return str(size) + u'秒'
+        if size < H:
+            return u'%s分钟%s秒' % (int(size / M), int(size % M))
+        else:
+            hour = int(size / H)
+            mine = int(size % H / M)
+            second = int(size % H % M)
+            tim_srt = u'%s小时%s分钟%s秒' % (hour, mine, second)
+            return tim_srt

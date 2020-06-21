@@ -49,7 +49,8 @@ def filter(flaskApp, **f):
         list = {
             "set": ["id", "number", "name"],
             "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay", "style", "offset_x",
-                    "offset_y", "scale", "grouped"]
+                    "offset_y", "scale", "grouped"],
+            "material": ["id", "number", "name", "label", "size", "time", "path"]
         }
         paramsList = list.get(routeRoot)
         paramsList = paramsList if paramsList else []

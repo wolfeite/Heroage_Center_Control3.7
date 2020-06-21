@@ -39,10 +39,38 @@ ASIDE = [
             {
                 "title": "主题管理",
                 "url": "/set/theme"
+            },
+            {
+                "title": "标签管理",
+                "url": "/set/label"
             }
         ]
     },
-    {"title": "素材管理", "url": "/material"}
+    {
+        "title": "素材管理", "url": "/material",
+        "item": [
+            {
+                "title": "视频",
+                "url": "/material/video"
+            },
+            {
+                "title": "图片",
+                "url": "/material/image"
+            },
+            {
+                "title": "PDF",
+                "url": "/material/pdf"
+            },
+            {
+                "title": "PPT",
+                "url": "/material/ppt"
+            },
+            {
+                "title": "音频",
+                "url": "/material/voice"
+            }
+        ]
+    }
 
     #     {
     #         "title": "内容管理",
