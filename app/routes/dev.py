@@ -21,7 +21,7 @@ def add_route(bp, **f):
         return json.dumps(res)
 
     @bp.route("/lamp/add", methods=["POST", "GET"])
-    def exhibitAdd():
+    def lampAdd():
         # ["id", "exhibit", "number", "port", "name", "type", "display", "delay", "style", "offset_x",
         #  "offset_y", "scale", "grouped"]
         lamp = db.models["lamp"]
@@ -31,7 +31,8 @@ def add_route(bp, **f):
         name = request.params["name"]
         type = request.params["type"]
         display = request.params["display"]
-        delay = request.params["delay"]
+        delay_start = request.params["delay_start"]
+        delay_end = request.params["delay_end"]
         style = request.params["style"]
         offset_x = request.params["offset_x"]
         offset_y = request.params["offset_y"]
@@ -39,8 +40,8 @@ def add_route(bp, **f):
         grouped = request.params["grouped"]
 
         row = {"exhibit": exhibit, "number": number, "port": port, "name": name, "type": type, "display": display,
-               "delay": delay, "style": style, "offset_x": offset_x, "offset_y": offset_y, "scale": scale,
-               "grouped": grouped}
+               "delay_start": delay_start, "delay_end": delay_end, "style": style, "offset_x": offset_x,
+               "offset_y": offset_y, "scale": scale, "grouped": grouped}
         print("row>>>", row)
         optRes = lamp.insert(row)
         print("optRes:>>", optRes)
@@ -62,7 +63,8 @@ def add_route(bp, **f):
         name = request.params["name"]
         type = request.params["type"]
         display = request.params["display"]
-        delay = request.params["delay"]
+        delay_start = request.params["delay_start"]
+        delay_end = request.params["delay_end"]
         style = request.params["style"]
         offset_x = request.params["offset_x"]
         offset_y = request.params["offset_y"]
@@ -70,8 +72,8 @@ def add_route(bp, **f):
         grouped = request.params["grouped"]
 
         row = {"exhibit": exhibit, "number": number, "port": port, "name": name, "type": type,
-               "display": display, "delay": delay, "style": style, "offset_x": offset_x, "offset_y": offset_y,
-               "scale": scale, "grouped": grouped}
+               "display": display, "delay_start": delay_start, "delay_end": delay_end, "style": style,
+               "offset_x": offset_x, "offset_y": offset_y, "scale": scale, "grouped": grouped}
         print("row>>>id", row, id)
 
         optRes = lamp.update(row, clause="where id={0}".format(id))

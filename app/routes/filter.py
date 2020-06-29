@@ -4,7 +4,7 @@ from libs.request import Params
 def requester(request, params=[]):
     with Params(request, params) as res:
         request.params = res.params
-        print(">>>>>requester:", request.path, request.params["name"], res)
+        print(">>>>>requester:", request.path, res)
 
 def filterPath(request, other=None):
     path = request.path
@@ -46,11 +46,19 @@ def filter(flaskApp, **f):
             return None
         path = request.path
         routeRoot = path.split("/", 3)[1]
+
         list = {
             "set": ["id", "number", "name"],
-            "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay", "style", "offset_x",
-                    "offset_y", "scale", "grouped"],
-            "material": ["id", "number", "name", "label", "size", "time", "path"]
+            "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay_start", "delay_end", "style",
+                    "offset_x", "offset_y", "scale", "grouped"],
+            "material": ["id", "number", "name", "label", "size", "time", "path"],
+            "content": [
+                "id", "exhibit", "number", "name", "tag", "ip", "width", "height", "play", "volume", "loop",
+                "cover_play", "display", "style", "scale", "offset_x", "offset_y", "theme", "content", "path", "cover",
+                "display_modal", "zoom_x", "zoom_y", "action_start", "action_end", "url", "title", "color", "font",
+                "align", "sub_title", "sub_color", "sub_font", "sub_offset_x", "sub_offset_y", "sub_align", "type",
+                "text"
+            ]
         }
         paramsList = list.get(routeRoot)
         paramsList = paramsList if paramsList else []

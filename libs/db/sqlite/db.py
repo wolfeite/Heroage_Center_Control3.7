@@ -11,7 +11,8 @@ class SqliteDb():
     def __init__(self, url, **config):
         self.url = url
         self.conf = {}
-        self.option = {"cursor": False, "row_factory": False, "dict_factory": True, "cb": None, "format": True}
+        self.option = {"cursor": False, "row_factory": False, "dict_factory": True, "cb": None, "format": True,
+                       "create_aggregate": None}
         conf = self.setOption(config)
         self.conf.update(conf)
         self.models = {}
@@ -42,6 +43,10 @@ class SqliteDb():
         opt = copy.deepcopy(self.option)
         opt.update(option)
         conn = self.connect
+        create_aggregate = opt.get("create_aggregate")
+        if create_aggregate:
+            conn.create_aggregate(*create_aggregate)
+
         if opt["dict_factory"]:
             conn.row_factory = self.dict_factory
         elif opt["row_factory"]:

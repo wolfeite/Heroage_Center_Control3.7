@@ -1,4 +1,6 @@
-from .routes import filter, dev, content, rights, down, set, material
+from .routes import filter, dev, content, rights, down, set, material, api
+from app.config import secure
+from app.config import setting
 
 def config_jinja(app):
     app.flask.add_template_global(app.config["ASIDE"], 'aside')
@@ -12,84 +14,262 @@ def config_jinja(app):
 
 def config_db(app):
     db = app.attr["db"]
-    # >>>>set
+    # 版本 version
+    version = db.model("version", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "text",
+        "time": "DATE DEFAULT (datetime('now','localtime'))"
+    })
+    res = version.find("*", clause="where number=3.7")
+    if len(res["data"]) == 0:
+        version.insert({"number": "3.7"})
+
+    # >>>>set 系统设置
+    # 展区管理
     exhibit = db.model("exhibit", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text"
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # 展厅序号
+        "name": "text"  # 展厅名字
     })
+    # 主题管理
     theme = db.model("theme", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # 主题序号
+        "name": "text not null"  # 主题名字
     })
+    # 标签管理
     label = db.model("label", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # 标签序号
+        "name": "text not null"  # 标签名字
     })
 
-    # >>>>material
+    # >>>>material 素材管理
+    # 视频
     video = db.model("video", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # 视频序号
+        "name": "text not null",  # 视频名字
         # "label": "int default 0 references label(id) on delete set default",
-        "path": "text",
-        "label": "int references label(id) on delete set null",
-        "size": "text",
-        "time": "text"
+        "path": "text",  # 视频存放路径
+        "label": "int references label(id) on delete set null",  # 标签外键
+        "size": "text",  # 视频大小
+        "time": "text"  # 视频时长
     })
+    # 图片
     image = db.model("image", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
-        "label": "int default 0 references label(id) on delete set default",
-        "size": "float default 0"
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # 图片序号
+        "name": "text not null",  # 图片名字
+        "path": "text",  # 图片存放路径
+        "label": "int references label(id) on delete set null",  # 标签外键
+        "size": "text"  # 图片大小
     })
+    # pdf
     pdf = db.model("pdf", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
-        "label": "int default 0 references label(id) on delete set default",
-        "size": "float default 0"
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # pdf序号
+        "name": "text not null",  # pdf名字
+        "path": "text",  # pdf存放路径
+        "label": "int references label(id) on delete set null",  # 标签外键
+        "size": "text",  # pdf大小
     })
+    # ppt
     ppt = db.model("ppt", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
-        "label": "int default 0 references label(id) on delete set default",
-        "size": "float default 0"
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # ppt序号
+        "name": "text not null",  # ppt名字
+        "path": "text",  # ppt存放路径
+        "label": "int references label(id) on delete set null",  # 标签外键
+        "size": "text",  # ppt大小
     })
+    # 声频
     voice = db.model("voice", {
-        "id": "integer not null primary key autoincrement unique",
-        "number": "integer default 1",
-        "name": "text not null",
-        "label": "int default 0 references label(id) on delete set default",
-        "size": "float default 0",
-        "time": "float default 0"
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",  # 音频序号
+        "name": "text not null",  # 音频名字
+        "path": "text",  # 音频存放路径
+        "label": "int references label(id) on delete set null",  # 标签外键
+        "size": "text",  # 音频大小
+        "time": "text"  # 音频时长
     })
 
-    # >>>>dev
+    # >>>>dev 设备管理
+    # 灯光管理
     lamp = db.model("lamp", {
-        "id": "integer not null primary key autoincrement unique",
-        "exhibit": "int not null references exhibit(id) on delete cascade",
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "exhibit": "int not null references exhibit(id) on delete cascade",  # 展区外键
         # "exhibit": "int default 0 references exhibit(id) on delete set default",
-        "number": "integer default 1",
-        "port": "int not null unique",
-        "name": "text not null",
-        "type": "boolean not null",
-        "display": "boolean not null",
-        "delay": "int not null",
-        "style": "text",
-        "offset_x": "int",
-        "offset_y": "int",
-        "scale": "float",
-        "grouped": "text",
+        "number": "integer default 1",  # 设备序号
+        "port": "int not null unique",  # 端口号
+        "name": "text not null",  # 设备名称
+        "type": "boolean not null",  # 设备类型
+        "delay_start": "int",  # 设备开机延迟
+        "delay_end": "int",  # 设备关机延迟
+        "grouped": "text",  # 所属组
+        "display": "boolean not null",  # APP是否显示
+        "style": "text",  # APP样式
+        "offset_x": "int",  # APP偏移X
+        "offset_y": "int",  # APP偏移Y
+        "scale": "float"  # APP缩放大小
+
     }, foreign="foreign key(exhibit) references exhibit(id)")
+    # 设备组管理
+    groups = db.model("groups", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "exhibit": "int not null references exhibit(id) on delete cascade",  # 展区外键
+        # "exhibit": "int default 0 references exhibit(id) on delete set default",
+        "number": "integer default 1",  # 设备序号
+        "name": "text not null",  # 设备组名称
+        "host": "text not null",  # 主机名称
+        "delay_start": "int",  # 主机开机延迟
+        "delay_end": "int",  # 主机关机延迟
+        "display": "boolean not null",  # APP是否显示
+        "style": "text",  # APP样式
+        "offset_x": "int",  # APP偏移X
+        "offset_y": "int",  # APP偏移Y
+        "scale": "float"  # APP缩放大小
+    })
+    # 红外管理
+    infrared = db.model("infrared", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "exhibit": "int not null references exhibit(id) on delete cascade",  # 展区外键
+        # "exhibit": "int default 0 references exhibit(id) on delete set default",
+        "number": "integer default 1",  # 设备序号
+        "name": "text not null",  # 设备名称
+        "tag": "text unique",  # 设备编号
+        "type": "text",  # 设备类型
+        "delay_start": "int",  # 设备开机延迟
+        "delay_end": "int",  # 设备关机延迟
+        "grouped": "text",  # 所属组
+        "params": "text",  # 定制参数
+        "style": "text"  # APP样式
+    })
+    # 串口管理
+    serial_port = db.model("serial_port", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "exhibit": "int not null references exhibit(id) on delete cascade",  # 展区外键
+        # "exhibit": "int default 0 references exhibit(id) on delete set default",
+        "number": "integer default 1",  # 设备序号
+        "name": "text not null",  # 设备名称
+        "tag": "text unique",  # 设备编号
+        "type": "text",  # 设备类型
+        "delay_start": "int",  # 设备开机延迟
+        "delay_end": "int",  # 设备关机延迟
+        "grouped": "text",  # 所属组
+        "params": "text",  # 定制参数
+        "style": "text"  # APP样式
+    })
+
+    # >>>>content 内容管理
+    content = db.model("content", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "exhibit": "int not null references exhibit(id) on delete cascade",  # 展区外键
+        "number": "integer default 1",  # 屏幕序号
+        "name": "text not null",  # 屏幕名称
+        "tag": "text not null",  # 屏幕编号标识
+        "ip": "text not null",  # 屏幕IP
+        "width": "int",  # 屏宽
+        "height": "int",  # 屏高
+        "play": "text",  # 默认播放的内容
+        "volume": "int",  # 播放音量
+        "loop": "boolean",  # 是否循环播放
+        "cover_play": "text",  # 封面播放模式
+        "display": "boolean not null",  # APP是否显示
+        "style": "text",  # APP样式
+        "scale": "float",  # APP缩放大小
+        "offset_x": "int",  # APP偏移X
+        "offset_y": "int",  # APP偏移Y
+        "time": "DATE DEFAULT (datetime('now','localtime'))"
+    })
+    # 内容详情-视频
+    content_video = db.model("content_video", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # 视频序号
+        "name": "text not null",  # 视频名称
+        "path": "text",  # 视频真实所在路径
+        "cover": "text",  # 视频封面所在路径
+        "display_modal": "int",  # 视频显示模式0full全屏|1custom自定义,
+        "offset_x": "int",  # APP偏移X
+        "offset_y": "int",  # APP偏移Y
+        "zoom_x": "int",  # APP缩放X
+        "zoom_y": "int",  # APP缩放Y
+        "width": "int",  # 源视频宽
+        "height": "int",  # 源视频高
+        "action_start": "text",  # 开始播放动作
+        "action_end": "text"  # 结束播放动作
+    })
+    # 内容详情-图片
+    content_image = db.model("content_image", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # 图片序号
+        "name": "text not null",  # 图片名称
+        "path": "text",  # 图片真实所在路径
+        "style": "text"  # 图片展示样式
+    })
+    # 内容详情-网页
+    content_web = db.model("content_web", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # web序号
+        "name": "text not null",  # web名称
+        "url": "text"  # web地址
+    })
+    # 内容详情-欢迎词
+    content_welcome = db.model("content_welcome", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # 序号
+        "path": "text",  # 背景所在路径
+        "title": "text not null",  # 主标题
+        "color": "text",  # 主标题颜色
+        "font": "text",  # 主标题字体大小
+        "offset_x": "int",  # 主标题X偏移
+        "offset_y": "int",  # 主标题Y偏移
+        "align": "text",  # 主标题对齐方式0center,1right,2left
+        "sub_title": "text not null",  # 副标题
+        "sub_color": "text",  # 副题颜色
+        "sub_font": "text",  # 副标题字体大小
+        "sub_offset_x": "int",  # 副标题X偏移
+        "sub_offset_y": "int",  # 副标题Y偏移
+        "sub_align": "text"  # 副标题对齐方式0center,1right,2left
+    })
+    # 内容详情-封面
+    content_cover = db.model("content_cover", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # 封面序号
+        "name": "text not null",  # 封面名称
+        "path": "text"  # 封面所在路径
+    })
+    # 内容详情-屏保
+    content_saver = db.model("content_saver", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # 屏保序号
+        "type": "number",  # 屏保类型 image | video
+        "path": "text"  # 屏保文件所在路径
+    })
+    # 内容详情-解说词
+    content_caption = db.model("content_caption", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "content": "int not null references content(id) on delete cascade",  # 内容外键
+        "theme": "int not null references theme(id) on delete cascade",  # 主题外键
+        "number": "integer default 1",  # 解说词序号
+        "text": "text not null",  # 解说词文字
+        "path": "text"  # 解说词声音文件所在路径
+    })
 
 def config_app(app):
-    app.config = ("app.config.secure", "app.config.setting")
+    app.config = (secure, setting)
     config_jinja(app)
     config_db(app)
     print(">>>>app.root_path:", app.flask.root_path)
@@ -100,3 +280,4 @@ def config_app(app):
     app.register_router("down", __name__, down.add_route, url_prefix="/down")
     app.register_router("set", __name__, set.add_route, url_prefix="/set")
     app.register_router("material", __name__, material.add_route, url_prefix="/material")
+    app.register_router("api", __name__, api.add_route, url_prefix="/api")

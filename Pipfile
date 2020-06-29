@@ -4,9 +4,15 @@ url = "https://mirrors.aliyun.com/pypi/simple/"
 verify_ssl = true
 
 [dev-packages]
+pyinstaller = "*"
 
 [packages]
 flask = "*"
+pyqt5 = "*"
+pymupdf = "*"
+websocket-client = "*"
+moviepy = "*"
+requests = "*"
 
 [requires]
 python_version = "3.8"

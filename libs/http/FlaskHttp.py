@@ -6,6 +6,7 @@
 from flask import Flask, Blueprint, request, render_template, redirect, current_app, flash, make_response, abort, g, \
     send_from_directory
 import time
+
 class FlaskServer():
     kwArgs = {
         "request": request, "render_template": render_template, "redirect": redirect,

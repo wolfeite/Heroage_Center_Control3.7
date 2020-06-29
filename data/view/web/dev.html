@@ -10,6 +10,16 @@
         .pt-2, .py-2 {
             padding-top: .2rem !important;
         }
+
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da;
+        }
+
+        .pt-2.px-3 .input-group {
+            display: flex;
+            flex-direction: row;
+            width: 150px;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -43,7 +53,7 @@
                     <div class="tab-content" id="custom-tabs-four-tabContent">
                         <div class="tab-pane fade show active" id="screen" role="tabpanel"
                              aria-labelledby="config-tab">
-                            <form role="form" action="/bg/save" enctype="multipart/form-data" method="post">
+                            <form role="form" action="#" enctype="multipart/form-data" method="post" id="testForm">
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label>样式ID</label>
@@ -80,7 +90,9 @@
                                 <!-- /.card-body -->
 
                                 <div class="card-footer">
-                                    <button type="submit" class="btn btn-primary">保存选项</button>
+                                    <button type="button" class="btn btn-primary" id="testBtn">同步测试</button>
+                                    <button type="button" class="btn btn-primary" id="downBtn">下载测试</button>
+                                    <button type="button" class="btn btn-primary" id="devBtn">设备信息</button>
                                 </div>
                             </form>
                         </div>
@@ -100,6 +112,26 @@
     <script>
         window.bsCustomFileInput && bsCustomFileInput.init();
         $('.select2').select2();
+        var testBtn = $("#testBtn")
+        testBtn.on("click", function () {
+            var params = $("#testForm").serialize()
+            $.request({url: "/api/check", data: params, type: "post", tip: true}, function (res) {
+                //$.request({url: "/load/check", type: "post", tip: true}, function (res) {
+                console.log("》》》》数据库检测结果", res.data)
+            })
+        });
+        var downBtn = $("#downBtn");
+        downBtn.on("click", function () {
+            $.request({url: "/api/down/db/test", tip: true}, function (res) {
+                console.log("》》》》数据库同步成功！", res.data)
+            })
+        });
+        var devBtn = $("#devBtn");
+        devBtn.on("click", function () {
+            $.request({url: "/api/dev", tip: true}, function (res) {
+                console.log("》》》》DEV信息！", res.data)
+            })
+        });
         +function () {
             var info = $("#infoEl")
             var text = info.attr("info")

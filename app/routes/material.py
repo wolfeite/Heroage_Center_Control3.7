@@ -32,7 +32,7 @@ def add_route(bp, **f):
         file = Movie("data")
         path = file.up(request, "path", "video")
         size = file.size(("video", path))
-        time = file.time(("video", path))
+        # time = file.time(("video", path))
         row = {"label": label, "number": number, "name": name, "size": size, "time": time, "path": path}
         print("row>>>", row)
         optRes = video.insert(row)

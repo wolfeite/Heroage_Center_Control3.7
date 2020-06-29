@@ -70,7 +70,12 @@ ASIDE = [
                 "url": "/material/voice"
             }
         ]
-    }
+    },
+    {
+        "title": "同步",
+        "url": "/api/update",
+        "item": []
+    },
 
     #     {
     #         "title": "内容管理",

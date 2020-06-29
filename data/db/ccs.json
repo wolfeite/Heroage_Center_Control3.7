@@ -1,0 +1,103 @@
+{
+  "id": "",
+  "exhibit": "",
+  "number": "",
+  "name": "",
+  "tag": "",
+  "ip": "",
+  "width": "",
+  "height": "",
+  "play": "",
+  "volume": "",
+  "loop": "",
+  "cover_play": "",
+  "display": "",
+  "style": "",
+  "scale": "",
+  "offset_x": "",
+  "offset_y": "",
+  "data": {
+    "video": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "",
+        "number": "",
+        "name": "",
+        "path": "",
+        "cover": "",
+        "display_modal": "",
+        "offset_x": "int",
+        "offset_y": "int",
+        "zoom_x": "int",
+        "zoom_y": "int",
+        "width": "",
+        "height": "",
+        "action_start": "",
+        "action_end": ""
+      }
+    ],
+    "image": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "",
+        "number": "",
+        "name": "",
+        "path": "",
+        "style": ""
+      }
+    ],
+    "web": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "i",
+        "number": "",
+        "name": "",
+        "url": ""
+      }
+    ],
+    "welcome": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "",
+        "number": "",
+        "name": "",
+        "path": "",
+        "style": ""
+      }
+    ],
+    "cover": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "",
+        "number": "",
+        "name": "",
+        "path": ""
+      }
+    ],
+    "saver": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "",
+        "number": "",
+        "type": "",
+        "path": ""
+      }
+    ],
+    "caption": [
+      {
+        "id": "",
+        "content": "",
+        "theme": "",
+        "number": "",
+        "text": "",
+        "path": ""
+      }
+    ]
+  }
+}
