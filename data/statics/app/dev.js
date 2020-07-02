@@ -98,6 +98,7 @@ function createDevApp(columns, url) {
                         e.stopPropagation();
                         var $el = $(this), type = $el.data("type")
                         if (type == "update") {
+                            updateForm[0].reset()
                             updateModalBtn.trigger("click")
                             for (var i in fields) {
                                 var name = fields[i].name

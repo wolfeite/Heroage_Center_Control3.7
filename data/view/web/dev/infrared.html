@@ -44,7 +44,7 @@
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-block btn-default btn-sm" id="addBtn"
                                             data-toggle="modal" data-target="#addModal"><i class="fas fa-plus"></i>
-                                        光电
+                                        红外
                                     </button>
                                 </div>
                             </div>
@@ -83,37 +83,27 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">接口：</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="port">
-                    </div>
-                </div>
-                <div class="form-group row">
                     <label class="col-sm-3 col-form-label">名称：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="请输入" value="" name="name">
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">编号：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="tag">
+                    </div>
+                </div>
+
                 <div class="form-group clearfix">
                     <label style="margin-right:55px">类型：</label>
                     <div class="icheck-primary d-inline">
                         <input type="radio" id="{{ prefix }}typeRadio1" name="type" value=0>
-                        <label for="{{ prefix }}typeRadio1">灯光</label>
+                        <label for="{{ prefix }}typeRadio1">灯光&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     </div>
                     <div class="icheck-primary d-inline">
                         <input type="radio" id="{{ prefix }}typeRadio2" name="type" value=1>
-                        <label for="{{ prefix }}typeRadio2">设备</label>
-                    </div>
-                </div>
-                <div class="form-group clearfix">
-                    <label style="margin-right:55px">显示：</label>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}displayRadio1" name="display" value=0>
-                        <label for="{{ prefix }}displayRadio1">否&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                    </div>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}displayRadio2" name="display" value=1>
-                        <label for="{{ prefix }}displayRadio2">是&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <label for="{{ prefix }}typeRadio2">设备&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -129,33 +119,33 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">样式：</label>
+                    <label class="col-sm-3 col-form-label">开次数：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="style">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="num_start">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">偏移X：</label>
+                    <label class="col-sm-3 col-form-label">关次数：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="offset_x">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">偏移Y：</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="offset_y">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">缩放：</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="scale">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="num_end">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-sm-3 col-form-label">所属组：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="请输入" value="" name="grouped">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">定制参数：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="params">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">样式：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="style">
                     </div>
                 </div>
             </div>
@@ -187,27 +177,24 @@
     <script src="{{ url_for('static',filename='app/dev.js') }}"></script>
     <script>
         var url = {
-            list: "/dev/lamp/list",
-            add: "/dev/lamp/add",
-            update: "/dev/lamp/update",
-            del: "/dev/lamp/del"
+            list: "/dev/infrared/list",
+            add: "/dev/infrared/add",
+            update: "/dev/infrared/update",
+            del: "/dev/infrared/del"
         }
-
         var columns = [
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "exhibit", type: "number", width: 30, align: "left", title: "展厅", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
-            {name: "port", type: "number", width: 50, align: "center", title: "接口"},
             {name: "name", type: "text", width: 160, align: "center", title: "名称"},
+            {name: "tag", type: "number", width: 50, align: "center", title: "编号"},
             {name: "type", type: "text", width: 80, align: "center", title: "灯光0/设备1"},
-            {name: "display", type: "text", width: 80, align: "center", title: "隐藏0/显示1"},
             {name: "delay_start", type: "number", width: 50, align: "center", title: "开延迟", visible: false},
             {name: "delay_end", type: "number", width: 50, align: "center", title: "关延迟", visible: false},
-            {name: "style", type: "text", width: 50, align: "center", title: "样式", visible: false},
-            {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
-            {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
-            {name: "scale", type: "number", width: 50, align: "center", title: "缩放", visible: false},
-            {name: "grouped", type: "number", width: 50, align: "center", title: "所属组", visible: false}
+            {name: "grouped", type: "number", width: 50, align: "center", title: "所属组", visible: false},
+            {name: "params", type: "number", width: 50, align: "center", title: "定制参数", visible: false},
+            {name: "style", type: "text", width: 50, align: "center", title: "样式", visible: false}
+
         ]
 
         createDevApp(columns, url)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, abort, g, redirect
+from flask import Flask, render_template, request, abort, g, redirect, url_for, session
 from libs.request import Params
 
 def requester(request, params=[]):
@@ -36,29 +36,42 @@ def filter(flaskApp, **f):
 
         # if request.path == "/favicon.ico":
         #     # abort(200)
+
+        if filterPath(request, "/sign"):
+            return None
+
+        user = session.get("user")
+        if not user:
+            print(">>>进入登入页")
+            return redirect(url_for("sign.login"))
+
         if path == "/" or path == "/index":
-            return redirect("/dev")
+            # 首页
+            return redirect(flaskApp.config["INDEX"])
         return None
 
     @flaskApp.before_request
     def params():
-        if filterPath(request, "/sign"):
+        if filterPath(request):
             return None
         path = request.path
         routeRoot = path.split("/", 3)[1]
 
         list = {
-            "set": ["id", "number", "name"],
-            "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay_start", "delay_end", "style",
-                    "offset_x", "offset_y", "scale", "grouped"],
+            # "sign": ["id", "number", "name", "password", "nickname", "rank", "right"],
+            # "rights": ["id", "number", "name", "password", "nickname", "rank", "right"],
+            #  "set": ["id", "number", "name"],
+            # "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay_start", "delay_end",
+            #         "num_start", "num_end" "style", "offset_x", "offset_y", "scale", "grouped", "host", "tag",
+            #         "params"],
             "material": ["id", "number", "name", "label", "size", "time", "path"],
-            "content": [
-                "id", "exhibit", "number", "name", "tag", "ip", "width", "height", "play", "volume", "loop",
-                "cover_play", "display", "style", "scale", "offset_x", "offset_y", "theme", "content", "path", "cover",
-                "display_modal", "zoom_x", "zoom_y", "action_start", "action_end", "url", "title", "color", "font",
-                "align", "sub_title", "sub_color", "sub_font", "sub_offset_x", "sub_offset_y", "sub_align", "type",
-                "text"
-            ]
+            # "content": [
+            #     "id", "exhibit", "number", "name", "tag", "ip", "width", "height", "play", "volume", "loop",
+            #     "cover_play", "display", "style", "scale", "offset_x", "offset_y", "theme", "content", "path", "cover",
+            #     "display_modal", "zoom_x", "zoom_y", "action_start", "action_end", "url", "title", "color", "font",
+            #     "align", "sub_title", "sub_color", "sub_font", "sub_offset_x", "sub_offset_y", "sub_align", "type",
+            #     "text"
+            # ]
         }
         paramsList = list.get(routeRoot)
         paramsList = paramsList if paramsList else []

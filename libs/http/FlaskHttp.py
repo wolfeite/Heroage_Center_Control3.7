@@ -4,14 +4,14 @@
 # Version:1.0：http_flask通用接口
 
 from flask import Flask, Blueprint, request, render_template, redirect, current_app, flash, make_response, abort, g, \
-    send_from_directory
+    send_from_directory, url_for, session
 import time
 
 class FlaskServer():
     kwArgs = {
         "request": request, "render_template": render_template, "redirect": redirect,
         "current_app": current_app, "flash": flash, "make_response": make_response, "abort": abort,
-        "g": g, "send_from_directory": send_from_directory
+        "g": g, "send_from_directory": send_from_directory, "url_for": url_for, "session": session
     }
 
     args = [request, make_response, render_template, redirect, current_app, flash]

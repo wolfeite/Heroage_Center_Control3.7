@@ -5,8 +5,8 @@ function createDetailApp(contentId) {
     console.log(">>>当前激活tab为：", tab)
     detail_tab.on("click", "li.nav-item", function (e) {
         tab = $(this).find("a").attr("type")
-        //查询
-        if (!urls[tab].done) {
+        if (options != null && options != undefined && !urls[tab].done) {
+            //查询
             urls[tab].done = true
             $.request({url: urls[tab].list, data: {theme: options, content: contentId}}, function (res) {
                 controllers[tab].clients = res.data
@@ -21,14 +21,16 @@ function createDetailApp(contentId) {
         //var options = themeSelector.find("option:selected").val(); //获取选中的项
         options = themeSelector.val()
         console.log("selector>>", options)
-        options != null && options != undefined && addForm.find("[name='theme']").val(options)
-        //查询
-        urls[tab].done = true
-        $.request({url: urls[tab].list, data: {theme: options, content: contentId}}, function (res) {
-            controllers[tab].clients = res.data
-            console.log("》》》》????", controllers[tab].clients)
-            grids[tab].jsGrid("loadData");
-        })
+        if (options != null && options != undefined) {
+            addForm.find("[name='theme']").val(options)
+            //查询
+            urls[tab].done = true
+            $.request({url: urls[tab].list, data: {theme: options, content: contentId}}, function (res) {
+                controllers[tab].clients = res.data
+                console.log("》》》》????", controllers[tab].clients)
+                grids[tab].jsGrid("loadData");
+            })
+        }
     })
     $.request({url: "/set/theme/list"}, function (res) {
         console.log(">>", res)
@@ -123,6 +125,7 @@ function createDetailApp(contentId) {
                             e.stopPropagation();
                             var $el = $(this), type = $el.data("type")
                             if (type == "update") {
+                                updateForm[0].reset()
                                 updateModalBtn.trigger("click")
                                 updateForm.find(".form-group").css("display", "none")
                                 for (var i in cols[tab]) {
@@ -142,6 +145,7 @@ function createDetailApp(contentId) {
                                             }
                                         })
                                     } else if (type == "file") {
+                                        console.log($el.siblings(".custom-file-label"), $el.siblings(".custom-file-label").length, $el.siblings(".custom-file-label")[0])
                                         $el.siblings(".custom-file-label").text(val)
                                     } else {
                                         $el.val(val)

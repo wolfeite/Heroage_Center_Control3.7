@@ -176,7 +176,8 @@ class Model():
     def __init__(self, db, name, fields):
         self.db = db
         self.name = name
-        self.items = fields
+        self.fields = fields
+        self.keys = self.fields.keys()
 
     def insert(self, items, isSql=False, **option):
         return self.db.insert(self.name, items, isSql=isSql, **option)

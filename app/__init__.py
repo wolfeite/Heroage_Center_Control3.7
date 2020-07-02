@@ -1,4 +1,4 @@
-from .routes import filter, dev, content, rights, down, set, material, api
+from .routes import filter, dev, content, rights, down, set, material, api, sign
 from app.config import secure
 from app.config import setting
 
@@ -17,12 +17,31 @@ def config_db(app):
     # 版本 version
     version = db.model("version", {
         "id": "integer not null primary key autoincrement unique",  # 主键
-        "number": "text",
+        "number": "integer default 1",
         "time": "DATE DEFAULT (datetime('now','localtime'))"
     })
-    res = version.find("*", clause="where number=3.7")
-    if len(res["data"]) == 0:
+    versionRes = version.find("*", clause="where number=3.7")
+    if len(versionRes["data"]) == 0:
         version.insert({"number": "3.7"})
+
+    from app.models.Author import Author
+    # 账号 account
+    account = db.model("account", {
+        "id": "integer not null primary key autoincrement unique",  # 主键
+        "number": "integer default 1",
+        "name": "text not null unique",  # 账号
+        "password": "text not null",
+        "nickname": "text",
+        "time": "DATE DEFAULT (datetime('now','localtime'))",
+        "rank": "integer default 100",
+        "right": "integer default null",
+        "tel": "text default null",
+        "email": "text default null",
+        "theme": "json default '[]'"
+    })
+    accountRes = account.find("*", clause="where name='heroAge'")
+    if len(accountRes["data"]) == 0:
+        account.insert({"name": "heroAge", "password": Author.md5("123456"), "nickname": "Hero", "rank": 1000})
 
     # >>>>set 系统设置
     # 展区管理
@@ -73,6 +92,7 @@ def config_db(app):
         "path": "text",  # pdf存放路径
         "label": "int references label(id) on delete set null",  # 标签外键
         "size": "text",  # pdf大小
+        "page": "int default 0"  # 页数
     })
     # ppt
     ppt = db.model("ppt", {
@@ -82,6 +102,7 @@ def config_db(app):
         "path": "text",  # ppt存放路径
         "label": "int references label(id) on delete set null",  # 标签外键
         "size": "text",  # ppt大小
+        "page": "int default 0"  # 页数
     })
     # 声频
     voice = db.model("voice", {
@@ -138,9 +159,11 @@ def config_db(app):
         "number": "integer default 1",  # 设备序号
         "name": "text not null",  # 设备名称
         "tag": "text unique",  # 设备编号
-        "type": "text",  # 设备类型
+        "type": "boolean not null",  # 设备类型
         "delay_start": "int",  # 设备开机延迟
         "delay_end": "int",  # 设备关机延迟
+        "num_start": "int",  # 开次数
+        "num_end": "int",  # 关次数
         "grouped": "text",  # 所属组
         "params": "text",  # 定制参数
         "style": "text"  # APP样式
@@ -153,7 +176,7 @@ def config_db(app):
         "number": "integer default 1",  # 设备序号
         "name": "text not null",  # 设备名称
         "tag": "text unique",  # 设备编号
-        "type": "text",  # 设备类型
+        "type": "boolean not null",  # 设备类型
         "delay_start": "int",  # 设备开机延迟
         "delay_end": "int",  # 设备关机延迟
         "grouped": "text",  # 所属组
@@ -281,3 +304,4 @@ def config_app(app):
     app.register_router("set", __name__, set.add_route, url_prefix="/set")
     app.register_router("material", __name__, material.add_route, url_prefix="/material")
     app.register_router("api", __name__, api.add_route, url_prefix="/api")
+    app.register_router("sign", __name__, sign.add_route, url_prefix="/sign")

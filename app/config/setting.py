@@ -1,4 +1,5 @@
 PER_PAGE = 15
+INDEX = "/dev/lamp"
 ASIDE = [
     {
         "title": "设备管理",
@@ -11,7 +12,7 @@ ASIDE = [
             },
             {
                 "title": "设备组管理",
-                "url": "/dev/host"
+                "url": "/dev/groups"
             },
             {
                 "title": "红外管理",
@@ -19,7 +20,7 @@ ASIDE = [
             },
             {
                 "title": "串口管理",
-                "url": "/dev/gorge"
+                "url": "/dev/serial_port"
             }
         ]
     },

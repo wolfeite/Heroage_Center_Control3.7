@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{ "中控后台" if not name else name }}</title>
+    <title>{{ "HCC" if not name else name }}</title>
     <link REL="SHORTCUT ICON" HREF="{{ url_for('static',filename='images/icon.ico/') }}"/>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="{{ url_for('static',filename='plugins/fontawesome-free/css/all.min.css') }}">
@@ -21,6 +21,9 @@
             top: 12px;
             right: 0px;
             width: 100%;
+        }
+        .pb-3, .py-3 {
+            padding-bottom: 5px !important;
         }
     </style>
 </head>
@@ -59,10 +62,10 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-dark-lightblue" id="asideLeft">
         <!-- Brand Logo -->
         <a href="#" class="brand-link navbar-lightblue">
-            <img src="{{ url_for('static',filename='images/AdminLTELogo.png') }}" alt="HeroAge"
-                 class="brand-image img-circle elevation-3"
-                 style="opacity: .8">
-            <span class="brand-text font-weight-light">{{ "中控后台" if not name else name }}</span>
+            <img src="{{ url_for('static',filename='images/icon.ico') }}" alt="HeroAge"
+                 class="brand-image img-circle elevation-3" style="opacity: .8;width:26px;height:26px">
+            <span class="brand-text font-weight-light"
+                  style="font-weight: 900; line-height: 16px;font-size: 16px;">{{ "HCC中控" if not name else name }}</span>
         </a>
 
         <!-- Sidebar -->
@@ -70,10 +73,10 @@
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
                     <img src="{{ url_for('static',filename='images/user1.jpg') }}"
-                         class="img-circle elevation-2" alt="User Image">
+                         class="img-circle elevation-2" alt="User Image" style="opacity: .8;width:26px;height:26px">
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block">{{ session.get("user") or "匿名" }}</a>
+                    <a href="#" class="d-block">{{ session.get("user").get("nickname") or "匿名" }}</a>
                 </div>
                 <div class="info">
                     <a href="#" class="d-block" style="font-size: 12px; padding: 2px 0">修改</a>
