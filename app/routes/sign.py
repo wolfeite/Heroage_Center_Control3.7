@@ -1,6 +1,6 @@
 # from libs.IO import File
 # from flask import jsonify, url_for, session
-from app.models.Author import Author
+from app.models.Account import Account
 import time
 
 def add_route(bp, **f):
@@ -15,16 +15,17 @@ def add_route(bp, **f):
 
     @bp.route("/in", methods=["POST", "GET"])
     def _in():
-        author = Author(db, request, pops="id")
+        account = Account(db, request, pops="id")
         # account = db.models["account"]
-        clause = "where name='{0}' and password='{1}'".format(author.name, author.password)
-        res = author.model.find("*", clause=clause)
+        clause = "where name='{0}' and password='{1}'".format(account.name, account.password)
+        res = account.model.find("*", clause=clause)
         info = "账号或密码错误"
         if len(res["data"]) > 0:
             session.clear()
             res["data"][0].pop("password")
             session["user"] = res["data"][0]
-            return redirect(url_for("dev.lamp"))
+            # return redirect(url_for("dev.lamp"))
+            return redirect("/index")
         return render("web/sign/sign.html", info=info)
 
     @bp.route("/out", methods=["POST", "GET"])
@@ -38,17 +39,17 @@ def add_route(bp, **f):
 
     @bp.route("/up", methods=["POST", "GET"])
     def up():
-        author = Author(db, request, pops="id")
+        account = Account(db, request, pops="id")
         # author = Author(request.params)
         # account = db.models["account"]
-        res = author.model.find("*", clause="where name='{0}'".format(author.name))
+        res = account.model.find("*", clause="where name='{0}'".format(account.name))
         if len(res["data"]) > 0:
             info = "账号已经注册"
             return render("web/sign/register.html", info=info)
         else:
-            author.rank = 100
-            author.number = 1
-            author.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            account.rank = 100
+            account.number = 1
+            account.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             # account.insert(author.__dict__)
-            author.model.insert(dict(author))
+            account.model.insert(dict(account))
             return redirect(url_for("sign.login"))

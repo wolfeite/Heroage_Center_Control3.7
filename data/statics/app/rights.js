@@ -27,6 +27,18 @@ function createDevApp(columns, url) {
     // var addOpt = $("#addOpt")
     // var addOptClose = $("#addOptClose")
 
+    var refreshLinks = function (links) {
+        var linksStr = ""
+        for (var i in links) {
+            var link = links[i], id = link.id
+            linksStr += '<div class="icheck-primary d-inline">' +
+                '<input type="checkbox" id="checkbox_' + id + '" value=' + id + '>' +
+                '<label for="checkbox_' + id + '">' + link.name + '&nbsp;&nbsp;&nbsp;&nbsp;</label>' +
+                '</div>'
+        }
+        linkForm.find(".form-group.clearfix").html(linksStr)
+    }
+
     var updateForm = $("#updateModal form")
     var updateOpt = $("#updateOpt")
     var updateOptClose = $("#updateOptClose")
@@ -36,6 +48,11 @@ function createDevApp(columns, url) {
     var delOpt = $("#delOpt")
     var delOptClose = $("#delOptClose")
     var delModalBtn = $("#delModalBtn")
+
+    var linkForm = $("#linksModal form")
+    var linksOpt = $("#linksOpt")
+    var linksOptClose = $("#linksOptClose")
+    var linkModalBtn = $("#linksModalBtn")
 
     $('.select2').select2()
     jsGrid.locale("zh-cn");
@@ -93,6 +110,7 @@ function createDevApp(columns, url) {
                 return $('<div class="btn-group">' +
                     '<button type="button" class="btn btn-default" data-type="update">修改</button>' +
                     '<button type="button" class="btn btn-default" data-type="delete">删除</button>' +
+                    '<button type="button" class="btn btn-default" data-type="theme">主题</button>' +
                     '</div>').on("click", "button",
                     function (e) {
                         e.stopPropagation();
@@ -123,6 +141,20 @@ function createDevApp(columns, url) {
                             delModalBtn.trigger("click")
                             delForm.find("[name='id']").val(item.id)
                             delForm.find("[name='exhibit']").val(item.exhibit)
+                        }else if (type == "theme") {
+                            var row = controller.clients.indexOf(item)
+                            linksOpt.attr("row", row)
+                            linkForm[0].reset()
+                            linkForm.find("[name='id']").val(item.id)
+                            // linkForm.find("[name='exhibit']").val(item.exhibit)
+                            var show = {display: "inline-block"}, hidden = {display: "none"}
+                            // linkForm.find("#checkbox_" + item.id).css(hidden).siblings().css(hidden).parents(".icheck-primary.d-inline").css(hidden).siblings().css(show).children().css(show)
+                            var links = JSON.parse(item.theme)
+                            for (var i in links) {
+                                var linkId = links[i]
+                                linkForm.find("#checkbox_" + linkId).prop("checked", true)
+                            }
+                            linkModalBtn.trigger("click")
                         }
 
                         //$.request({url: "/set/exhibit/add", data: {name: "大厅", number: 3}}, function (res) {
@@ -155,8 +187,9 @@ function createDevApp(columns, url) {
     //查询
     $.request({url: url.list}, function (res) {
         controller.clients = res.data
-        console.log("》》》》????", controller.clients)
+        console.log("》》》》theme>>", res.theme)
         gridList.jsGrid("loadData");
+        refreshLinks(res.theme)
     })
     //新增
     // addOpt.on("click", function (e) {
@@ -187,7 +220,31 @@ function createDevApp(columns, url) {
             console.log("》》》》????", controller.clients)
             gridList.jsGrid("loadData");
             delOptClose.trigger("click")
+            refreshLinks(res.theme)
         })
     })
 
+    //关联
+    linksOpt.on("click", function (e) {
+        var check_list = [], nocheck_list = [], $el = $(this)
+        linkForm.find("input[type='checkbox']:checked").each(function () {
+            check_list.push($(this).val())
+        })
+        linkForm.find("input[type='checkbox']:not(:checked)").each(function () {
+            nocheck_list.push($(this).val())
+        })
+        console.log(check_list.join(","))
+        $.request({
+            url: url.theme,
+            data: {"theme": check_list.join(","), "id": linkForm.find("[name='id']").val()},
+            type: "post",
+            tip: true
+        }, function (res) {
+            var index = parseInt($el.attr("row"))
+            console.log(">>>>>?>>", res.data, index, controller.clients[index])
+            controller.clients[index].theme = res.data
+            gridList.jsGrid("loadData");
+            linksOptClose.trigger("click")
+        })
+    })
 }

@@ -1,21 +1,21 @@
-from libs.Viewer import View
+from .pattern import ViewModel
 
-class Lamp(View):
+class Lamp(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["lamp"]
-        super(Lamp, self).__init__(self.model.keys, request, **con)
+        super(Lamp, self).__init__(db, "lamp", request, **con)
 
-class Groups(View):
+class Host(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["groups"]
-        super(Groups, self).__init__(self.model.keys, request, **con)
+        super(Host, self).__init__(db, "host", request, **con)
 
-class Infrared(View):
+class Groups(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["infrared"]
-        super(Infrared, self).__init__(self.model.keys, request, **con)
+        super(Groups, self).__init__(db, "groups", request, **con)
 
-class Serial_port(View):
+class Infrared(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["serial_port"]
-        super(Serial_port, self).__init__(self.model.keys, request, **con)
+        super(Infrared, self).__init__(db, "infrared", request, **con)
+
+class Serial_port(ViewModel):
+    def __init__(self, db, request, **con):
+        super(Serial_port, self).__init__(db, "serial_port", request, **con)

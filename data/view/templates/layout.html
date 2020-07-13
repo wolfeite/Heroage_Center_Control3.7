@@ -22,12 +22,13 @@
             right: 0px;
             width: 100%;
         }
+
         .pb-3, .py-3 {
             padding-bottom: 5px !important;
         }
     </style>
 </head>
-<body class="hold-transition sidebar-mini text-sm">
+<body class="hold-transition sidebar-mini text-sm" url_for="{{ url_for('static',filename='') }}">
 <div class="wrapper">
 
     <!-- Navbar -->
@@ -65,7 +66,7 @@
             <img src="{{ url_for('static',filename='images/icon.ico') }}" alt="HeroAge"
                  class="brand-image img-circle elevation-3" style="opacity: .8;width:26px;height:26px">
             <span class="brand-text font-weight-light"
-                  style="font-weight: 900; line-height: 16px;font-size: 16px;">{{ "HCC中控" if not name else name }}</span>
+                  style="font-weight: 900; line-height: 16px;font-size: 16px;">{{ "CCS中控" if not name else name }}</span>
         </a>
 
         <!-- Sidebar -->
@@ -244,10 +245,10 @@
     <footer class="main-footer">
         <!-- To the right -->
         <div class="float-right d-none d-sm-inline">
-            v2.1
+            v4.1
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2020 <a href="https://adminlte.io">HeroAge</a>.</strong> 上海朗迹.
+        <strong>Copyright &copy; 2020 <a href="https://adminlte.io">CCS</a>.</strong> 中通服.
     </footer>
 </div>
 <!-- ./wrapper -->
@@ -268,7 +269,29 @@
 
 {% block js %}{% endblock %}
 <script>
-    window.bsCustomFileInput && bsCustomFileInput.init();
+    $(document).ready(function () {
+        window.bsCustomFileInput && bsCustomFileInput.init();
+        $('.select2').length > 0 && $('.select2').select2();
+        $addBtn = $("#addBtn")
+        if ($addBtn.length > 0) {
+            $addBtn.on("click", function (e) {
+                var btn = $(this)
+                $selector = $("#exhibitSelector,#themeSelector,#sortSelector")
+                $selector.each(function (i) {
+                    var $el = $(this), html = $el.html(), id = this.id,
+                        str = id.startsWith("exhibit") ? "展区" : id.startsWith("theme") ? "主题" : "标签";
+                    console.log("html>>>", html, this.id)
+                    if (html == "") {
+                        alert("请先配置" + str)
+                        btn.attr("data-target", "")
+                    } else {
+                        btn.attr("data-target", "#addModal")
+                    }
+                })
+            })
+        }
+    });
+    //window.bsCustomFileInput && bsCustomFileInput.init();
 </script>
 </body>
 </html>

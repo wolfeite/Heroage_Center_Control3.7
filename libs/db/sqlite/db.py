@@ -68,8 +68,12 @@ class SqliteDb():
                 isfunction(cb) and cb(result)
                 return self.format(result, True, "数据库操作成功") if opt["format"] else result
         except sqlite3.IntegrityError as e:
-            errorText = "IntegrityError：{0}".format(e)
+            errorText = "10001-[IntegrityError]{0}".format(e)
             print(errorText)
+            if "UNIQUE" in errorText:
+                strError = errorText.split(":")
+                print(">>>",strError)
+                errorText = "10001-[IntegrityError]字段{0}必须唯一".format(strError[1])
             return self.format([], False, errorText) if opt["format"] else errorText
         conn.close()
 

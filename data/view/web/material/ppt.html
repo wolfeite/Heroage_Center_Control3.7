@@ -1,0 +1,164 @@
+{% extends "templates/layout.html" %}
+{% block css %}
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/ionicons.min.css') }}">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+    <style>
+        .pt-2, .py-2 {
+            padding-top: .2rem !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da;
+        }
+
+        .pt-2.px-3 .input-group {
+            display: flex;
+            flex-direction: row;
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {% from "templates/input.html" import input %}
+    {% set info = dev %}
+    <!-- Main content -->
+    <section class="content">
+        <div id="infoEl" style="display:none;" info="{{ get_flashed_messages(category_filter=type)[0] }}"
+             type="{{ type }}"></div>
+        <div class="col-12 col-sm-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="pt-2 px-3">
+                            <div class="input-group" style="width:200px">
+                                <select class="form-control select2" style="flex:1 1 0%" id="sortSelector"></select>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-block btn-default btn-sm" id="addBtn"
+                                            data-toggle="modal" data-target="#addModal"><i class="fas fa-plus"></i>
+                                        ppt
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill"
+                               href="#custom-tabs-four-home" role="tab" aria-controls="screen"
+                               aria-selected="true">列表</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="screen" role="tabpanel"
+                             aria-labelledby="custom-tabs-four-home-tab">
+                            <div id="contentList"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+
+    {% from "templates/operateModal.html" import addModal,updateModal,delModal %}
+    {% macro formModal(prefix="_") %}
+        <form role="form" action="#" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="id" value=""/>
+            <input type="hidden" name="label" value=""/>
+            <div class="card-body">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">序号：</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="number">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">ppt：</label>
+                    <div class="input-group col-sm-10">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="path"
+                                   accept="application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+                            {#                            <label class="custom-file-label">{{ info.video if info.video else "选择视频" }}</label>#}
+                            <label class="custom-file-label">选择PPT</label>
+                        </div>
+                        {#                            <div class="input-group-append">#}
+                        {#                                <span class="input-group-text" >更新</span>#}
+                        {#                            </div>#}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">名称：</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="name">
+                    </div>
+                </div>
+                {#                <div class="form-group row">#}
+                {#                    <label class="col-sm-2 col-form-label">大小：</label>#}
+                {#                    <div class="col-sm-10">#}
+                {#                        <input type="text" class="form-control" placeholder="请输入" value="" name="size" disabled>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="form-group row">#}
+                {#                    <label class="col-sm-2 col-form-label">时长：</label>#}
+                {#                    <div class="col-sm-10">#}
+                {#                        <input type="text" class="form-control" placeholder="请输入" value="" name="time" disabled>#}
+                {#                    </div>#}
+                {#                </div>#}
+            </div>
+        </form>
+    {% endmacro %}
+
+    {% call addModal() %}
+        {{ formModal("add_") }}
+    {% endcall %}
+    {% call updateModal() %}
+        {{ formModal("update_") }}
+    {% endcall %}
+    {% call delModal() %}
+        <p>该展厅的所有相关配置都将删除！</p>
+        <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
+            <input type="hidden" name="id" value=""/>
+            <input type="hidden" name="label" value=""/>
+        </form>
+    {% endcall %}
+
+{% endblock %}
+{% block js %}
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
+    <!-- bs-custom-file-input -->
+    <script src="{{ url_for('static',filename='plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+    <!-- jsGrid -->
+    <script src="{{ url_for('static',filename='plugins/jsgrid/demos/db.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/jsgrid/jsgrid-zh-cn.js') }}"></script>
+    <script src="{{ url_for('static',filename='app/material.js') }}"></script>
+    <script>
+        var url = {
+            list: "/material/ppt/list",
+            add: "/material/ppt/add",
+            update: "/material/ppt/update",
+            del: "/material/ppt/del"
+        }
+        var columns = [
+            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "label", type: "number", width: 30, align: "left", title: "标签", visible: false},
+            {name: "number", type: "number", width: 50, align: "center", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
+            {name: "path", type: "text", width: 160, align: "center", title: "路径", visible: false},
+            //{name: "size", type: "number", width: 100, align: "center", title: "大小(M)"},
+            {name: "page", type: "number", width: 100, align: "center", title: "页数"}
+        ]
+        createMaterialApp(columns, url)
+    </script>
+{% endblock %}

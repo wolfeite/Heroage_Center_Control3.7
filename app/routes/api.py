@@ -28,13 +28,14 @@ def filterDev(data):
 
 def add_route(bp, **f):
     render, db, request, redirect = f["render_template"], f["db"], f["request"], f["redirect"]
-    # 版本跟新
+    # 版本更新
     @bp.route("/update", methods=["POST", "GET"])
     def updated():
         version = db.models["version"]
         res = version.update({"time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}, clause="where number=3.7")
         print(">>>数据库更新结果：", res)
-        return render("web/dev.html", type={}, dev={})
+        # return render("web/dev.html", type={}, dev={})
+        return json.dumps(res)
 
     # APP版本获取
     @bp.route("/check", methods=["POST", "GET"])
@@ -85,7 +86,7 @@ def add_route(bp, **f):
     def downVideo(filename):
         # 普通下载
         print(">>>>开始普通下载！")
-        dirpath = os.path.join(f["request"].app["root"], 'data', "video")
+        dirpath = os.path.join(f["request"].app["root"], 'data', "statics", "video")
         print(">>>", f["request"].app["root"], dirpath, filename)
         # send_from_directory其他配置项：mimetype=mimetype,cache_timeout=30*60
         response = f["make_response"](f["send_from_directory"](dirpath, filename, as_attachment=True))

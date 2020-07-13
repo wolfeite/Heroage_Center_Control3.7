@@ -11,8 +11,8 @@ ASIDE = [
                 "url": "/dev/lamp"
             },
             {
-                "title": "设备组管理",
-                "url": "/dev/groups"
+                "title": "主机管理",
+                "url": "/dev/host"
             },
             {
                 "title": "红外管理",
@@ -21,6 +21,15 @@ ASIDE = [
             {
                 "title": "串口管理",
                 "url": "/dev/serial_port"
+            },
+            {
+                "title": "设备组管理",
+                "url": "/dev/groups"
+            },
+            {
+                "title": "同步",
+                # "url": "/api/update",
+                "url": "#"
             }
         ]
     },
@@ -50,14 +59,14 @@ ASIDE = [
     {
         "title": "素材管理", "url": "/material",
         "item": [
-            {
-                "title": "视频",
-                "url": "/material/video"
-            },
-            {
-                "title": "图片",
-                "url": "/material/image"
-            },
+            # {
+            #     "title": "视频",
+            #     "url": "/material/video"
+            # },
+            # {
+            #     "title": "图片",
+            #     "url": "/material/image"
+            # },
             {
                 "title": "PDF",
                 "url": "/material/pdf"
@@ -65,18 +74,18 @@ ASIDE = [
             {
                 "title": "PPT",
                 "url": "/material/ppt"
-            },
-            {
-                "title": "音频",
-                "url": "/material/voice"
             }
+            # ,{
+            #     "title": "音频",
+            #     "url": "/material/voice"
+            # }
         ]
-    },
-    {
-        "title": "同步",
-        "url": "/api/update",
-        "item": []
-    },
+    }
+    # {
+    #     "title": "同步",
+    #     "url": "/api/update",
+    #     "item": []
+    # },
 
     #     {
     #         "title": "内容管理",

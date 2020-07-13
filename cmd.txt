@@ -1,0 +1,2 @@
+pyinstaller -F -w -i icon.ico Admin.py
+--hidden-import pkg_resources.py2_warn

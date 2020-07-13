@@ -1,7 +1,5 @@
-# from libs.IO import File
-# from flask import jsonify, url_for, session
-from app.models.Author import Author
-import time
+from app.models.Account import Account
+from app.models.Set import Theme
 import json
 
 def add_route(bp, **f):
@@ -12,42 +10,58 @@ def add_route(bp, **f):
     def rights():
         return render("web/rights.html")
 
+    @bp.route("/theme", methods=["POST", "GET"])
+    def rightsTheme():
+        params = Account(db, request, pops="id")
+        print("params.theme", params.theme)
+        theme = json.dumps(params.theme.split(","))
+        optRes = params.model.update({"theme": theme}, clause="where id={0}".format(params.id))
+        optRes["data"] = theme
+        return json.dumps(optRes)
+
     @bp.route("/list", methods=["POST", "GET"])
     def rightsList():
-        author = Author(db, request, pops="id")
+        account = Account(db, request, pops="id")
         orderBy = "order by number ASC,id DESC"
         # clause = "where name='{0}' and password='{1}'".format(author.name, author.password)
-        res = author.model.find("id,number,nickname,rank", clause=orderBy)
-        print("res:>>", res)
+        res = account.model.find("id,number,nickname,rank,theme", clause=orderBy)
+        params = Theme(db, request, pops="id")
+        theme = params.model.find("id,name")
+        res["theme"] = theme["data"]
         # return json.dumps(res, default=lambda o: o.__dict__)
+        print("res:>>", res)
         return json.dumps(res)
 
     @bp.route("/update", methods=["POST", "GET"])
     def rightsUpdate():
-        author = Author(db, request, pops="id")
+        account = Account(db, request, pops="id")
         user = session.get("user")
-        checkStr = "where id={0} and rank<={1}".format(author.id, user["rank"])
-        checkRank = author.model.find("rank", clause=checkStr)
+        checkStr = "where id={0} and rank<={1}".format(account.id, user["rank"])
+        checkRank = account.model.find("rank", clause=checkStr)
         optRes = {"success": False, "msg": "权限不足,拒绝操作", "data": []}
-        if (len(checkRank["data"]) > 0 and user["rank"] >= int(author.rank)):
-            row = {"number": author.number, "nickname": author.nickname, "rank": author.rank}
-            optRes = author.model.update(row, clause="where id={0}".format(author.id))
+        if (len(checkRank["data"]) > 0 and user["rank"] >= int(account.rank)):
+            row = {"number": account.number, "nickname": account.nickname, "rank": account.rank}
+            optRes = account.model.update(row, clause="where id={0}".format(account.id))
 
         orderBy = "order by number ASC,id DESC"
-        res = author.model.find("id,number,nickname,rank", clause=orderBy)
+        res = account.model.find("id,number,nickname,rank,theme", clause=orderBy)
         optRes["data"] = res["data"]
         return json.dumps(optRes if not optRes["success"] else res)
 
     @bp.route("/del", methods=["POST", "GET"])
     def rightsDelete():
-        author = Author(db, request, pops="id")
+        account = Account(db, request, pops="id")
         user = session.get("user")
-        checkRank = author.model.find("rank", clause="where id={0} and rank<={1}".format(author.id, user["rank"]))
+        checkRank = account.model.find("rank", clause="where id={0} and rank<={1}".format(account.id, user["rank"]))
         optRes = {"success": False, "msg": "权限不足,拒绝操作!", "data": []}
         if (len(checkRank["data"]) > 0):
-            optRes = author.model.delete(clause="where id={0}".format(author.id))
+            optRes = account.model.delete(clause="where id={0}".format(account.id))
         # print("optRes:>>", optRes)
         orderBy = "order by number ASC,id DESC"
-        res = author.model.find("id,number,nickname,rank", clause=orderBy)
+        res = account.model.find("id,number,nickname,rank,theme", clause=orderBy)
         optRes["data"] = res["data"]
+        params = Theme(db, request, pops="id")
+        theme = params.model.find("id,name")
+        res["theme"] = theme["data"]
+        optRes["theme"] = theme["data"]
         return json.dumps(optRes if not optRes["success"] else res)

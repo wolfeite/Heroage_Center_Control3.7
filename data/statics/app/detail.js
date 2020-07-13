@@ -2,10 +2,27 @@ function createDetailApp(contentId) {
     var detail_tab = $("#detail_tab")
     var grids = {}, urls = {}, cols = {}, controllers = {}, tab = detail_tab.find(".nav-link.active").attr("type"),
         options = undefined;
-    console.log(">>>当前激活tab为：", tab)
+    var setPath = function (type) {
+        console.log(">>>>", type)
+        if (type == "video") {
+            $("[name='path']", [addForm[0], updateForm[0]]).on("change", function (e) {
+                var el = this, video = el.files[0], url = video ? URL.createObjectURL(video) : "";
+                $("[name='preVideo']", $(this).parents("form")).css("display", "block").attr('src', url); //获取文件本地路径 预览视频
+            }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频")
+            // updateForm.find("[name='path']").on("change", function (e) {
+            //     var el = this, video = el.files[0], url = URL.createObjectURL(video);
+            //     $("[name='preVideo']").css("display", "block").attr('src', url); //获取文件本地路径 预览视频
+            // }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频")
+        } else {
+            $("[name='path']", [addForm[0], updateForm[0]]).off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+            // addForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+            // updateForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+        }
+    }
     detail_tab.on("click", "li.nav-item", function (e) {
         tab = $(this).find("a").attr("type")
-        if (options != null && options != undefined && !urls[tab].done) {
+        //if (options != null && options != undefined && !urls[tab].done) {
+        if (options != null && options != undefined) {
             //查询
             urls[tab].done = true
             $.request({url: urls[tab].list, data: {theme: options, content: contentId}}, function (res) {
@@ -14,6 +31,7 @@ function createDetailApp(contentId) {
                 grids[tab].jsGrid("loadData");
             })
         }
+        setPath(tab)
     })
 
     var themeSelector = $("#themeSelector")
@@ -30,10 +48,10 @@ function createDetailApp(contentId) {
                 console.log("》》》》????", controllers[tab].clients)
                 grids[tab].jsGrid("loadData");
             })
+            setPath(tab)
         }
     })
-    $.request({url: "/set/theme/list"}, function (res) {
-        console.log(">>", res)
+    $.request({url: "/content/theme"}, function (res) {
         var data = res.data
         themeSelector.html("")
         for (var i  in data) {
@@ -53,6 +71,16 @@ function createDetailApp(contentId) {
     var updateOpt = $("#updateOpt")
     var updateOptClose = $("#updateOptClose")
     var updateModalBtn = $("#updateModalBtn")
+
+    $("[name='preVideo']", [addForm[0], updateForm[0]]).on("canplaythrough", function (e) {
+        var el = this, time = el.duration;
+        var hour = parseInt(time / 3600);
+        var minute = parseInt((time % 3600) / 60);
+        var second = Math.ceil(time % 60);
+        var duration = [hour, minute, second].join(":")
+        console.log(duration)
+        $(el).parents("form").find("[name='time']").val(duration)
+    })
 
     var delForm = $("#delModal form")
     var delOpt = $("#delOpt")
@@ -126,6 +154,10 @@ function createDetailApp(contentId) {
                             var $el = $(this), type = $el.data("type")
                             if (type == "update") {
                                 updateForm[0].reset()
+                                var preVideo = updateForm.find("[name='preVideo']")
+                                preVideo.css("display", "none").attr('src', '')
+                                item.path && item.path.startsWith("video") && preVideo.css("display", "block").attr('src', $.url_for(item.path))
+                                $("#update_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
                                 updateModalBtn.trigger("click")
                                 updateForm.find(".form-group").css("display", "none")
                                 for (var i in cols[tab]) {
@@ -142,15 +174,16 @@ function createDetailApp(contentId) {
                                             if ($radio.val() == val) {
                                                 console.log(">>>>", $radio.val(), val)
                                                 $radio.prop("checked", true);
+                                                name == "type" && setPath($radio.data("type"));
                                             }
                                         })
                                     } else if (type == "file") {
-                                        console.log($el.siblings(".custom-file-label"), $el.siblings(".custom-file-label").length, $el.siblings(".custom-file-label")[0])
+                                        // console.log($el.siblings(".custom-file-label"), $el.siblings(".custom-file-label").length, $el.siblings(".custom-file-label")[0])
                                         $el.siblings(".custom-file-label").text(val)
                                     } else {
                                         $el.val(val)
                                     }
-                                    $el.parents(".form-group").css("display", display)
+                                    name != "material" && $el.parents(".form-group").css("display", display)
                                 }
                                 //updateForm.find("[name='number']").val(item.number)
                                 //updateForm.find("[name='name']").val(item.name)
@@ -191,6 +224,9 @@ function createDetailApp(contentId) {
     }
 
     var $addBtn = $("#addBtn").on("click", function () {
+        addForm[0].reset()
+        $("#add_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
+        addForm.find("[name='preVideo']").css("display", "none").attr('src', '')
         addForm.find(".form-group").css("display", "none")
         for (var index in  cols[tab]) {
             var file = cols[tab][index], name = file.name
@@ -199,9 +235,20 @@ function createDetailApp(contentId) {
             }
             var input = addForm.find("[name='" + name + "']")
             var type = input.attr("type")
-            var str = type == "radio" ? "block" : "flex"
+            var str = "flex";
+            if (type == "radio") {
+                str = "block";
+                input.eq(0).prop("checked", true);
+                setPath(input.data("type"))
+            }
+            // var str = type == "radio" ? "block" : "flex"
             input.parents(".form-group").css("display", str)
         }
+    })
+
+    var typeRadio = $('input[type=radio][name=type]', [addForm[0], updateForm[0]]).change(function (e) {
+        // console.log("ssddc>>>>>>,,,,>>>", this.value)
+        setPath($(this).data("type"))
     })
 
     //新增
@@ -216,7 +263,6 @@ function createDetailApp(contentId) {
             console.log("》》》》????", controllers[tab].clients)
             grids[tab].jsGrid("loadData");
             addOptClose.trigger("click")
-            addForm[0].reset()
         })
     })
     //修改

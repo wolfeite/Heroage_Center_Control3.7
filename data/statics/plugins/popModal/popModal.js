@@ -8,7 +8,7 @@ if(!$.isFunction(_options.html)){if($.type(_options.html)=='string'){var htmlStr
 if(htmlStr.search(/<form/)!=-1||elemObj.find('.'+elemClass+'_content').outerHeight()<200){elemObj.find('.'+elemClass+'_content').removeClass(elemClass+'_contentOverflow');}}
 if(_options.onLoad&&$.isFunction(_options.onLoad)){_options.onLoad();}
 elemObj.on('destroyed',function(){if(_options.onClose&&$.isFunction(_options.onClose)){_options.onClose();}});getView();getPlacement();if(_options.onDocumentClickClose){$('html').on('click.'+elemClass+'Event',function(event){$(this).addClass(elemClass+'Open');if(elemObj.is(':hidden')){popModalClose();}
-var target=$(event.target);if(!target.parents().andSelf().is('.'+elemClass)&&!target.parents().andSelf().is(elem)){var zIndex=parseInt(target.parents().filter(function(){return $(this).css('zIndex')!=='auto';}).first().css('zIndex'));if(isNaN(zIndex)){zIndex=0;}
+var target=$(event.target);if(!target.parents().addBack().is('.'+elemClass)&&!target.parents().addBack().is(elem)){var zIndex=parseInt(target.parents().filter(function(){return $(this).css('zIndex')!=='auto';}).first().css('zIndex'));if(isNaN(zIndex)){zIndex=0;}
 var target_zIndex=target.css('zIndex');if(target_zIndex=='auto'){target_zIndex=0;}
 if(zIndex<target_zIndex){zIndex=target_zIndex;}
 if(zIndex<=elemObj.css('zIndex')){popModalClose();}}});}

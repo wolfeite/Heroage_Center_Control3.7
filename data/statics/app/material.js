@@ -4,23 +4,27 @@ function createMaterialApp(columns, url) {
         //var options = sortSelector.find("option:selected").val(); //获取选中的项
         var options = sortSelector.val()
         console.log("selector>>", options)
-        options != null && addForm.find("[name='label']").val(options)
         //查询
-        $.request({url: url.list, data: {label: options}}, function (res) {
-            controller.clients = res.data
-            console.log("》》》》????", controller.clients)
-            gridList.jsGrid("loadData");
-        })
+        if (options != null && options != undefined) {
+            addForm.find("[name='label']").val(options)
+            $.request({url: url.list, data: {label: options}}, function (res) {
+                controller.clients = res.data
+                console.log("》》》》????", controller.clients)
+                gridList.jsGrid("loadData");
+            })
+        }
+
     })
 
-    $.request({url: "/set/label/list"}, function (res) {
+    $.request({url: "/material/label"}, function (res) {
         console.log(">>", res)
         var data = res.data
         sortSelector.html("")
-        sortSelector.append($.parseHTML("<option value='0'>未标签</option>"))
+        //sortSelector.append($.parseHTML("<option value='0'>未标签</option>"))
         for (var i  in data) {
             var item = data[i], val = item.id, name = item.name
-            sortSelector.append($.parseHTML("<option value='" + val + "'>" + name + "</option>"))
+            var str = val == 0 ? "<option value='" + val + "' selected>" + name + "</option>" : "<option value='" + val + "'>" + name + "</option>"
+            sortSelector.append($.parseHTML(str))
         }
         sortSelector.trigger("change")
     })

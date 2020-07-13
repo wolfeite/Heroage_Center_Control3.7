@@ -13,6 +13,7 @@ pymupdf = "*"
 websocket-client = "*"
 moviepy = "*"
 requests = "*"
+pywin32 = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,4 +1,11 @@
 function createDevApp(columns, url) {
+    var asideDev = $("#asideLeftList").children()[0]
+    $("[href='#']", asideDev).on("click", function (e) {
+        $.request({url: "/api/update", tip: true}, function (res) {
+            console.log("设备更新成功！")
+        })
+    })
+
     var exhibitSelector = $("#exhibitSelector")
     exhibitSelector.on("change", function (e) {
         //var options = exhibitSelector.find("option:selected").val(); //获取选中的项

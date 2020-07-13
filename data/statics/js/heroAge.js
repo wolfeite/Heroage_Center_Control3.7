@@ -89,7 +89,14 @@
             setTimeout(() => {
                 $('#alert').alert('close');
             }, expire);
-        }
+        },
+        url_for: function () {
+            var $body = $("body")
+            return function (path) {
+                var url_for = $body.attr("url_for");
+                return url_for + path
+            }
+        }()
     })
 
     var asideLeft = $("#asideLeft")
@@ -118,25 +125,6 @@
 
 
 $(function () {
-    if ($("#example1").length > 0) {
-        $("#example1").DataTable({
-            "responsive": true,
-            "autoWidth": false,
-        });
-    }
-
-    if ($("#example2").length > 0) {
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
-    }
-
 
 });
 

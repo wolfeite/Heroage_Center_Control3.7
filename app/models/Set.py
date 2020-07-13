@@ -1,16 +1,12 @@
-from libs.Viewer import View
-
-class Exhibit(View):
+from .pattern import ViewModel
+class Exhibit(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["exhibit"]
-        super(Exhibit, self).__init__(self.model.keys, request, **con)
+        super(Exhibit, self).__init__(db, "exhibit", request, **con)
 
-class Theme(View):
+class Theme(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["theme"]
-        super(Theme, self).__init__(self.model.keys, request, **con)
+        super(Theme, self).__init__(db, "theme", request, **con)
 
-class Label(View):
+class Label(ViewModel):
     def __init__(self, db, request, **con):
-        self.model = db.models["label"]
-        super(Label, self).__init__(self.model.keys, request, **con)
+        super(Label, self).__init__(db, "label", request, **con)

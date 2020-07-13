@@ -25,6 +25,15 @@
             flex-direction: row;
             width: 150px;
         }
+
+        #linksModal [class*=icheck-] > label {
+            margin-bottom: 8px;
+            width: 155px;
+            white-space: nowrap;
+            word-break: keep-all;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -70,7 +79,7 @@
     </section>
     <!-- /.content -->
 
-    {% from "templates/operateModal.html" import addModal,updateModal,delModal %}
+    {% from "templates/operateModal.html" import addModal,updateModal,delModal,linksModal %}
     {% macro formModal(prefix="_") %}
         <form role="form" action="#" enctype="multipart/form-data" method="post">
             <input type="hidden" name="id" value=""/>
@@ -119,6 +128,21 @@
             {#            <input type="hidden" name="exhibit" value=""/>#}
         </form>
     {% endcall %}
+    {% call linksModal() %}
+        <p>选择主题</p>
+        <form role="form" action="#" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="id" value=""/>
+            {#            <input type="hidden" name="exhibit" value=""/>#}
+            <div class="form-group clearfix">
+                <!--
+                <div class="icheck-primary d-inline">
+                    <input type="checkbox" id="checkboxPrimary1" checked>
+                    <label for="checkboxPrimary1"></label>
+                </div>
+                -->
+            </div>
+        </form>
+    {% endcall %}
 
 {% endblock %}
 {% block js %}
@@ -134,7 +158,8 @@
             list: "/rights/list",
             //add: "/rights/add",
             update: "/rights/update",
-            del: "/rights/del"
+            del: "/rights/del",
+            theme: "/rights/theme"
         }
         var columns = [
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
@@ -145,7 +170,8 @@
                 itemTemplate: function (value, item) {
                     return value > 100 ? "管理员" : "讲解员"
                 }
-            }
+            },
+            {name: "theme", type: "text", width: 50, align: "center", title: "主题配置", visible: false}
         ]
 
         createDevApp(columns, url)

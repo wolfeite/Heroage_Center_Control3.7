@@ -4,6 +4,7 @@ import os
 import datetime
 import random
 import fitz
+import subprocess
 
 class Path():
     def __init__(self, dir=""):
@@ -110,7 +111,7 @@ class File():
                 fi = request.files[input_name]
                 filename = fi.filename
                 if filename == '':
-                    return False
+                    return ""
                 ftype = '.' + filename.rsplit('.', 1)[1]
                 file = datetime.datetime.now().strftime('%Y%m%d%H%M%S') + str(random.randint(0, 999)) + ftype
                 dir_Path = os.path.join(self.dir, dir)
@@ -136,13 +137,15 @@ class File():
         allowed = '.' in filename and filename.rsplit('.', 1)[1].lower() in imgs
         return self.up(request, input_name, dir, size) if allowed else False
 
-    def pdf2img(self, fileName, src_dir, store_dir=""):
+    def pdf2img(self, fileName, src_dir, tar_dir=None):
+        print("准备打开PDF文件", os.path.join(self.dir, src_dir, fileName))
         doc = fitz.open(os.path.join(self.dir, src_dir, fileName))  # 打开一个PDF文件，doc为Document类型，是一个包含每一页PDF文件的列表
         if not doc.isPDF:
             return False
-        store_dir = src_dir if not store_dir else store_dir
+
         fileName = fileName.split(".")[0]
-        target = os.path.join(self.dir, store_dir, fileName)
+        out_path = self.outPath(src_dir, tar_dir)
+        out_path_png = os.path.join(out_path, fileName)
 
         trans = fitz.Matrix(1, 1).preRotate(0)
         pm = doc[0].getPixmap(matrix=trans, alpha=False)
@@ -160,20 +163,20 @@ class File():
         trans = fitz.Matrix(zoom_x, zoom_y).preRotate(rotate)  # 缩放系数1.3在每个维度  .preRotate(rotate)是执行一个旋转
         fileNames = []
         print("%s开始转换..." % src_dir)
-        if doc.pageCount > 1:  # 获取PDF的页数
+        if doc.pageCount > 0:  # 获取PDF的页数
             for pg in range(doc.pageCount):
                 page = doc[pg]  # 获得第pg页
                 pm = page.getPixmap(matrix=trans, alpha=False)  # 将其转化为光栅文件（位数）
-                str_path = "%s%s.png" % (target, pg)  # 保证输出的文件名不变
+                str_path = "%s%s%s.png" % (out_path_png, "_", pg)  # 保证输出的文件名不变
                 pm.writeImage(str_path)  # 将其输入为相应的图片格式，可以为位图，也可以为矢量图
-                fileNames.append("%s%s.png" % (fileName, pg))
+                fileNames.append("%s%s%s.png" % (fileName, "_", pg))
                 # 我本来想输出为jpg文件，但是在网页中都是png格式（即调用writePNG），再转换成别的图像文件前，最好查一下是否支持
-        else:
-            page = doc[0]
-            pm = page.getPixmap(matrix=trans, alpha=False)
-            pm.writeImage("%s.png" % target)
-            fileNames.append("%s.png" % fileName)
-        print("转换至%s完成！" % store_dir)
+        # else:
+        #     page = doc[0]
+        #     pm = page.getPixmap(matrix=trans, alpha=False)
+        #     pm.writeImage("%s.png" % target)
+        #     fileNames.append("%s.png" % page_prefix)
+        print("转换至%s完成！" % out_path_png)
         return fileNames
 
     def remove(self, dir, fileName):
@@ -183,6 +186,76 @@ class File():
     def removes(self, dir, arrs):
         for fileName in arrs:
             self.removeImg(dir, fileName)
+
+    def outPath(self, src_dir, tar_dir):
+        tar_dir = src_dir if not tar_dir else os.path.join(src_dir, tar_dir)
+        path = os.path.join(self.dir, tar_dir)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return path
+
+class Office(File):
+    def __init__(self, baseDir):
+        super(Office, self).__init__(baseDir)
+
+    # libreoffice 命令行方式 --- ubuntu环境下方案，注意win10环境下，打包需要开启后台窗口
+    def ppt2pdf(self, fileName, src_dir, tar_dir=None, timeout=None):
+        ppt_path = os.path.join(self.dir, src_dir, fileName)
+        out_path = self.outPath(src_dir, tar_dir)
+        name = "{0}{1}".format(fileName.rsplit('.')[0], ".pdf")
+        # outPath_pdf = os.path.join(out_path, name)
+        # args = ['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', out_path, ppt_path]
+        args = ['soffice', '--headless', '--convert-to', 'pdf', '--outdir', out_path, ppt_path]
+        # subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout, shell=True)
+        subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
+        # re.search('-> (.*?) using filter', process.stdout.decode())
+        return name
+
+    # pywin32实现方式 --- win10环境下不希望打包后有命令框方案！
+    # def ppt2pdf(self, fileName, src_dir, tar_dir=None):
+    #     import win32com
+    #     from win32com.client import Dispatch, constants, gencache, DispatchEx
+    #     import pythoncom
+    #
+    #     ppt_path = os.path.join(self.dir, src_dir, fileName)
+    #     out_path = self.outPath(src_dir, tar_dir)
+    #     name = "{0}{1}".format(fileName.rsplit('.')[0], ".pdf")
+    #     outPath_pdf = os.path.join(out_path, name)
+    #     # outPath_png = os.path.join(out_path, "{0}{1}".format(name, ".png"))
+    #
+    #     pythoncom.CoInitialize()
+    #     # gencache.EnsureModule('{00020905-0000-0000-C000-000000000046}', 0, 8, 4)
+    #     p = Dispatch("PowerPoint.Application")
+    #     ppt = p.Presentations.Open(ppt_path, False, False, False)
+    #     res = ppt.ExportAsFixedFormat(outPath_pdf, 2, PrintRange=None)
+    #     print('保存 PDF 文件：', outPath_pdf, res)
+    #     ppt.Close()
+    #     p.Quit()
+    #     return name
+    #
+    # def ppt2img(self, fileName, src_dir, tar_dir=None):
+    #     # import win32com
+    #     # from win32com.client import Dispatch, constants, gencache, DispatchEx
+    #     # import pythoncom
+    #
+    #     ppt_path = os.path.join(self.dir, src_dir, fileName)
+    #     out_path = self.outPath(src_dir, tar_dir)
+    #     name = fileName.rsplit('.')[0]
+    #     # outPath_pdf = os.path.join(out_path, "{0}{1}".format(name, ".pdf"))
+    #     outPath_png = os.path.join(out_path, "{0}{1}".format(name, ".png"))
+    #
+    #     pythoncom.CoInitialize()
+    #     powerpoint = win32com.client.Dispatch('PowerPoint.Application')
+    #     # powerpoint.Visible = True
+    #     ppt = powerpoint.Presentations.Open(ppt_path)
+    #     # 保存为图片
+    #     res = ppt.SaveAs(outPath_png, 17)
+    #     # 保存为pdf
+    #     # res = ppt.SaveAs(outPath_pdf, 32)  # formatType = 32 for ppt to pdf
+    #     # 关闭打开的ppt文件
+    #     ppt.Close()
+    #     # 关闭powerpoint软件
+    #     powerpoint.Quit()
 
 class Movie(File):
     def __init__(self, baseDir):

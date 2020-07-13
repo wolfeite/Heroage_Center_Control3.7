@@ -1,3 +1,7 @@
+# Author: 骆琦（wolfeite）
+# Corp: 朗迹
+# StartTime:2020.6.18
+# Version:1.0
 class Request():
     def __init__(self, request):
         self.request = request
@@ -20,6 +24,9 @@ class View():
         for key in fields:
             setattr(self, key, self.request.value(key))
 
+    def param(self, name):
+        return self.request.value(name)
+
     def init(self, con):
         self.config = {"pops": None}
         self.config.update(con)
@@ -35,6 +42,9 @@ class View():
         pops = self.config["pops"]
         pops and self.pops(*pops)
         return self.fields
+
+    def get(self, name, defVal=None):
+        return getattr(self, name, defVal)
 
     def __getitem__(self, key):
         '''内置方法, 当使用obj['name']的形式的时候, 将调用这个方法, 这里返回的结果就是值'''

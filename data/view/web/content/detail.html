@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='plugins/jsgrid/jsgrid-theme.min.css') }}">
     <!-- iCheck for checkboxes and radio inputs -->
     <link rel="stylesheet" href="{{ url_for('static',filename='plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+    <!-- popModal -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='plugins/popModal/popModal.min.css') }}">
     <style>
         .pt-2, .py-2 {
             padding-top: .2rem !important;
@@ -24,6 +26,34 @@
             display: flex;
             flex-direction: row;
             width: 150px;
+        }
+
+        #testMM {
+            width: 500px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #testMM li {
+            width: 100px;
+            padding: 5px;
+        }
+
+        #testMM button {
+            white-space: nowrap;
+            word-break: keep-all;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        #testMM button active {
+            color: #fff;
+            background-color: #138496;
+            border-color: #117a8b;
         }
     </style>
 {% endblock %}
@@ -114,6 +144,21 @@
             <input type="hidden" name="theme" value=""/>
             <div class="card-body">
                 <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">素材：</label>
+                    <div class="input-group col-sm-9">
+                        <input type="text" class="form-control" placeholder="PDF/PPT" name="material">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                    id="{{ prefix }}labelBtn" lid="" name="选择标签">
+                                <span style="max-width: 80px;white-space:nowrap;word-break:keep-all;text-overflow:ellipsis;overflow: hidden;display:inline-flex">选择标签</span>
+                            </button>
+                            <div class="dropdown-menu" id="{{ prefix }}label"></div>
+                        </div>
+
+                        <!-- /btn-group -->
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label class="col-sm-3 col-form-label">序号：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="请输入" value="" name="number">
@@ -126,7 +171,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">素材：</label>
+                    <label class="col-sm-3 col-form-label">视频/图片：</label>
                     <div class="input-group col-sm-9">
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" name="path">
@@ -137,12 +182,15 @@
                         {#                                <span class="input-group-text" >更新</span>#}
                         {#                            </div>#}
                     </div>
+                    <video controls="controls" name="preVideo"
+                           style="display: none;width:100%;height:200px;margin-top: 16px;"></video>
+                    <input type="hidden" name="time" value="0">
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">封面：</label>
+                    <label class="col-sm-3 col-form-label">缩略图：</label>
                     <div class="input-group col-sm-9">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="cover">
+                            <input type="file" class="custom-file-input" name="cover" accept="image/*">
                             {#                            <label class="custom-file-label">{{ info.video if info.video else "选择视频" }}</label>#}
                             <label class="custom-file-label">{{ "选择封面" }}</label>
                         </div>
@@ -154,7 +202,14 @@
                 <div class="form-group row">
                     <label class="col-sm-3 col-form-label">显示模式：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="display_modal">
+                        <input type="text" class="form-control" placeholder="0全屏，1自定义" value="" name="display_modal">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">播放模式：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="0回到封面，1单循环，2顺序播放，3停止" value=""
+                               name="play_modal">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -296,13 +351,13 @@
                     </div>
                 </div>
                 <div class="form-group clearfix">
-                    <label style="margin-right:55px">类型：</label>
+                    <label style="margin-right:90px">类型：</label>
                     <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}typeRadio1" name="type" value=0>
+                        <input type="radio" id="{{ prefix }}typeRadio1" name="type" value=0 data-type="image">
                         <label for="{{ prefix }}typeRadio1">图片</label>
                     </div>
                     <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}typeRadio2" name="type" value=1>
+                        <input type="radio" id="{{ prefix }}typeRadio2" name="type" value=1 data-type="video">
                         <label for="{{ prefix }}typeRadio2">视频</label>
                     </div>
                 </div>
@@ -316,10 +371,10 @@
         </form>
     {% endmacro %}
 
-    {% call addModal() %}
+    {% call addModal(600,350) %}
         {{ formModal("add_") }}
     {% endcall %}
-    {% call updateModal() %}
+    {% call updateModal(600,350) %}
         {{ formModal("update_") }}
     {% endcall %}
     {% call delModal() %}
@@ -330,6 +385,15 @@
             <input type="hidden" name="theme" value=""/>
         </form>
     {% endcall %}
+    <div style="display:none" id="testHello">
+        <url id="testMM"></url>
+        <!-- 底部按钮
+        <div class="popModal_footer">
+            <button type="button" class="btn btn-primary" data-popmodal-but="ok">确定</button>
+            <button type="button" class="btn btn-default" data-popmodal-but="cancel">取消</button>
+        </div>
+        -->
+    </div>
 {% endblock %}
 {% block js %}
     <!-- bs-custom-file-input -->
@@ -342,8 +406,74 @@
     <script src="{{ url_for('static',filename='plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ url_for('static',filename='app/detail.js') }}"></script>
     <!-- popModal -->
-    <script src="{{ url_for('static',filename='plugins/popModal/popModal.js') }}"></script>
+    <script src="{{ url_for('static',filename='plugins/popModal/popModal.min.js') }}"></script>
     <script>
+        var labelBtn = $("#add_labelBtn,#update_labelBtn"), doc = $(document), curBtn;
+        labelBtn.click(function (e) {
+            $('html').popModal("hide");
+        })
+        $.request({url: "/set/label/list"}, function (res) {
+            var str = '<a class="dropdown-item" href="#" lid="" name="选择标签">选择标签</a>'
+            for (var i in res.data) {
+                var label = res.data[i], nm = label.name, id = label.id;
+                //i == 0 && labelBtn.attr("lid", id).find("span").text(nm)
+                str += '<a class="dropdown-item" href="#" lid="' + id + '" name="' + nm + '">' + nm + '</a>'
+            }
+            $("#add_label,#update_label").html(str).on("click", "a", function (e) {
+                var $el = $(this), lid = $el.attr("lid"), n = $el.attr("name");
+                curBtn = $el.parent(".dropdown-menu").siblings("button")
+                curBtn.attr({"lid": lid, "name": n}).find("span").text(n)
+                lid == "" && curBtn.parent(".input-group-append").siblings("input").val("")
+                doc.trigger("click")
+                e.stopPropagation()
+                lid !== "" && $.request({url: "/material/list/" + lid}, function (res) {
+                    //var lis='<li> <button type="button" class="btn btn-block btn-outline-info btn-xs active">Infostart</button> </li>'
+                    var liStr = ""
+                    for (var i in res.data) {
+                        var li = res.data[i]
+                        var n = li.name, p = li.path, pg = li.page
+                        liStr += '<li> <button type="button" class="btn btn-block btn-outline-info btn-xs" page="' + pg + '" path="' + p + '" name="' + n + '"> ' + n + '</button> </li>'
+                    }
+                    $("#testMM").html(liStr)
+                    curBtn.popModal({
+                        html: $('#testHello'),
+                        //html: '<h1>HELLO LQjkj</h1>',
+                        placement: 'bottomRight',
+                        showCloseBut: true,
+                        //onDocumentClickClose: true,
+                        //onDocumentClickClosePrevent: '',
+                        size: '{"width": "530", "height": "600"}',
+                        overflowContent: false,
+                        inline: true,
+                        asMenu: false,
+                        onOkBut: function (e, el) {
+                            console.log("onOK")
+                            $('#testHello').css("display", "none")
+                        },
+                        onCancelBut: function (e, el) {
+                            console.log("onCancel")
+                            $('#testHello').css("display", "none")
+                        },
+                        onLoad: function (el) {
+                            console.log("onload", el)
+                            $('#testHello').css("display", "block")
+                        },
+                        onClose: function (el) {
+                            console.log("onClose")
+                            $('#testHello').css("display", "none")
+                        }
+                    });
+                })
+            })
+        })
+
+        $("#testMM").on("click", "li", function (e) {
+            //console.log(">>>>", this)
+            var $el = $(this)
+            $("#testMM").find("li button").removeClass("active")
+            var btn = $el.find("button").addClass("active")
+            curBtn && curBtn.parent(".input-group-append").siblings("input").val(btn.attr("path") + "_" + btn.attr("page"))
+        })
 
         var video_url = {
             list: "/content/video/list",
@@ -397,7 +527,8 @@
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
             {name: "path", type: "text", width: 80, align: "center", title: "路径", visible: false},
             {name: "cover", type: "text", width: 80, align: "center", title: "封面"},
-            {name: "display_modal", type: "text", width: 80, align: "center", title: "播放模式"},
+            {name: "display_modal", type: "text", width: 80, align: "center", title: "显示模式"},
+            {name: "play_modal", type: "text", width: 80, align: "center", title: "播放模式", visible: false},
             {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
             {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
             {name: "zoom_x", type: "number", width: 50, align: "center", title: "缩放X", visible: false},
@@ -409,6 +540,7 @@
         ]
 
         var image_columns = [
+            {name: "material", type: "text", width: 30, align: "left", title: "素材", visible: false},
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
@@ -448,6 +580,7 @@
         ]
 
         var cover_columns = [
+            {name: "material", type: "text", width: 30, align: "left", title: "素材", visible: false},
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},

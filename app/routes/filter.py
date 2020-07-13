@@ -1,10 +1,5 @@
 from flask import Flask, render_template, request, abort, g, redirect, url_for, session
-from libs.request import Params
-
-def requester(request, params=[]):
-    with Params(request, params) as res:
-        request.params = res.params
-        print(">>>>>requester:", request.path, res)
+import copy
 
 def filterPath(request, other=None):
     path = request.path
@@ -15,25 +10,8 @@ def filter(flaskApp, **f):
     print("app>>>>>>>httpServer", flaskApp)
     # g.root_path = flaskApp.root_path
     @flaskApp.before_request
-    def parser():
-        staticAside = flaskApp.config["ASIDE"]
-        request.app = {}
-        request.app["aside"] = staticAside
-        request.app["root"] = flaskApp.root_path
-        request.app["pathsName"] = []
-
-        for val in staticAside:
-            request.path.startswith(val["url"]) and request.app["pathsName"].append(val["title"])
-            if val.get("item") and len(val["item"]) > 0:
-                for cval in val["item"]:
-                    request.path.startswith(cval["url"]) and request.app["pathsName"].append(cval["title"])
-
-    @flaskApp.before_request
     def auther():
         path = request.path
-        if filterPath(request, "/sign"):
-            return None
-
         # if request.path == "/favicon.ico":
         #     # abort(200)
 
@@ -45,41 +23,45 @@ def filter(flaskApp, **f):
             print(">>>进入登入页")
             return redirect(url_for("sign.login"))
 
-        if path == "/" or path == "/index":
-            # 首页
-            return redirect(flaskApp.config["INDEX"])
         return None
 
     @flaskApp.before_request
-    def params():
-        if filterPath(request):
+    def parserAside():
+        if filterPath(request, "/sign"):
+            return None
+        # rootAside = copy.deepcopy(flaskApp.config["ASIDE"])
+        aside = flaskApp.config["ASIDE"]
+        rootAside = []
+        user = session.get("user")
+        if user:
+            rootAside = [aside[1], aside[4]] if user["rank"] < 800 else aside
+        request.app = {}
+        request.app["aside"] = rootAside
+        request.app["root"] = flaskApp.root_path
+        request.app["pathsName"] = []
+
+        for val in rootAside:
+            request.path.startswith(val["url"]) and request.app["pathsName"].append(val["title"])
+            if val.get("item") and len(val["item"]) > 0:
+                for cval in val["item"]:
+                    request.path.startswith(cval["url"]) and request.app["pathsName"].append(cval["title"])
+
+    @flaskApp.before_request
+    def pathsFilter():
+        if filterPath(request, "/sign"):
             return None
         path = request.path
-        routeRoot = path.split("/", 3)[1]
+        startWith = path.split("/", 3)[1]
+        filters = []
+        user = session.get("user")
+        index = flaskApp.config["INDEX"]
+        if user and user["rank"] < 800:
+            index = "/content"
+            filters = ["dev", "rights", "set"]
 
-        list = {
-            # "sign": ["id", "number", "name", "password", "nickname", "rank", "right"],
-            # "rights": ["id", "number", "name", "password", "nickname", "rank", "right"],
-            #  "set": ["id", "number", "name"],
-            # "dev": ["id", "exhibit", "number", "port", "name", "type", "display", "delay_start", "delay_end",
-            #         "num_start", "num_end" "style", "offset_x", "offset_y", "scale", "grouped", "host", "tag",
-            #         "params"],
-            "material": ["id", "number", "name", "label", "size", "time", "path"],
-            # "content": [
-            #     "id", "exhibit", "number", "name", "tag", "ip", "width", "height", "play", "volume", "loop",
-            #     "cover_play", "display", "style", "scale", "offset_x", "offset_y", "theme", "content", "path", "cover",
-            #     "display_modal", "zoom_x", "zoom_y", "action_start", "action_end", "url", "title", "color", "font",
-            #     "align", "sub_title", "sub_color", "sub_font", "sub_offset_x", "sub_offset_y", "sub_align", "type",
-            #     "text"
-            # ]
-        }
-        paramsList = list.get(routeRoot)
-        paramsList = paramsList if paramsList else []
-        print(">>>>获取参数数组", paramsList, routeRoot)
-        requester(request, paramsList)
-        # 1 / 0
-        print("app请求前置处理器》》》》params:", request.path)
-        return None
+        if path == "/" or path == "/index" or startWith in filters:
+            # 首页/默认页
+            return redirect(index)
 
     @flaskApp.after_request
     def excp(response):

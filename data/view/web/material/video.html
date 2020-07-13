@@ -40,9 +40,7 @@
                     <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
                         <li class="pt-2 px-3">
                             <div class="input-group" style="width:200px">
-                                <select class="form-control select2" style="flex:1 1 0%" id="sortSelector">
-                                    <option selected="selected">展区1</option>
-                                </select>
+                                <select class="form-control select2" style="flex:1 1 0%" id="sortSelector"></select>
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-block btn-default btn-sm" id="addBtn"
                                             data-toggle="modal" data-target="#addModal"><i class="fas fa-plus"></i>
@@ -153,7 +151,7 @@
         }
         var columns = [
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
-            {name: "label", type: "number", width: 30, align: "left", title: "展厅", visible: false},
+            {name: "label", type: "number", width: 30, align: "left", title: "标签", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
             {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "path", type: "text", width: 160, align: "center", title: "路径", visible: false},

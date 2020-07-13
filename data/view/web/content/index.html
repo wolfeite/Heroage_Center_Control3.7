@@ -25,6 +25,15 @@
             flex-direction: row;
             width: 150px;
         }
+
+        #linksModal [class*=icheck-] > label {
+            margin-bottom: 8px;
+            width: 155px;
+            white-space: nowrap;
+            word-break: keep-all;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -72,7 +81,7 @@
     </section>
     <!-- /.content -->
 
-    {% from "templates/operateModal.html" import addModal,updateModal,delModal %}
+    {% from "templates/operateModal.html" import addModal,updateModal,delModal,linksModal %}
     {% macro formModal(prefix="_") %}
         <form role="form" action="#" enctype="multipart/form-data" method="post">
             <input type="hidden" name="id" value=""/>
@@ -195,7 +204,21 @@
             <input type="hidden" name="exhibit" value=""/>
         </form>
     {% endcall %}
-
+    {% call linksModal() %}
+        <p>选择需要关联的屏幕</p>
+        <form role="form" action="#" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="id" value=""/>
+            <input type="hidden" name="exhibit" value=""/>
+            <div class="form-group clearfix">
+                <!-- /.card
+               <div class="icheck-primary d-inline">
+                   <input type="checkbox" id="checkboxPrimary3" disabled>
+                   <label for="checkboxPrimary3">预留</label>
+               </div>
+               -->
+            </div>
+        </form>
+    {% endcall %}
 {% endblock %}
 {% block js %}
     <!-- jsGrid -->
@@ -210,19 +233,20 @@
             list: "/content/list",
             add: "/content/add",
             update: "/content/update",
-            del: "/content/del"
+            del: "/content/del",
+            links: "/content/links"
         }
 
         var columns = [
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "exhibit", type: "number", width: 30, align: "left", title: "展厅", visible: false},
-            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "tag", type: "text", width: 80, align: "center", title: "屏幕编号"},
             {name: "ip", type: "text", width: 80, align: "center", title: "屏幕IP"},
             {name: "width", type: "number", width: 50, align: "center", title: "屏宽", visible: false},
             {name: "height", type: "number", width: 50, align: "center", title: "屏高", visible: false},
-            {name: "play", type: "text", width: 80, align: "center", title: "默认播放"},
+            {name: "play", type: "text", width: 80, align: "center", title: "默认播放", visible: false},
             {name: "volume", type: "text", width: 80, align: "center", title: "播放音量", visible: false},
             {name: "loop", type: "text", width: 80, align: "center", title: "循环否0/是1", visible: false},
             {name: "cover_play", type: "text", width: 80, align: "center", title: "封面播放模式", visible: false},
@@ -230,7 +254,8 @@
             {name: "style", type: "text", width: 50, align: "center", title: "样式", visible: false},
             {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
             {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
-            {name: "scale", type: "number", width: 50, align: "center", title: "缩放", visible: false}
+            {name: "scale", type: "number", width: 50, align: "center", title: "缩放", visible: false},
+            {name: "links", type: "text", width: 50, align: "center", title: "关联", visible: false}
         ]
 
         createContentApp(columns, url)

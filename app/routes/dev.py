@@ -1,5 +1,5 @@
 import json
-from app.models.Dev import Lamp, Groups, Infrared, Serial_port
+from app.models.Dev import Lamp, Host, Groups, Infrared, Serial_port
 
 def add_route(bp, **f):
     render, db, request = f["render_template"], f["db"], f["request"]
@@ -10,52 +10,51 @@ def add_route(bp, **f):
 
     @bp.route("/lamp", methods=["POST", "GET"])
     def lamp():
-        return render("web/dev/lamp.html", type="", dev={})
+        return render("web/dev/lamp.html")
 
     @bp.route("/lamp/list", methods=["POST", "GET"])
     def lampList():
         params = Lamp(db, request, pops="id")
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        # return json.dumps(res, default=lambda o: o.__dict__)
-        return json.dumps(res)
+        return json.dumps(params.findBy("exhibit"))
 
     @bp.route("/lamp/add", methods=["POST", "GET"])
     def lampAdd():
-        params = Lamp(db, request, pops="id")
-        optRes = params.model.insert(dict(params))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        optRes["data"] = res["data"]
-
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Lamp(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.insert())
 
     @bp.route("/lamp/update", methods=["POST", "GET"])
     def lampUpdate():
-        params = Lamp(db, request, pops="id")
-        optRes = params.model.update(dict(params), clause="where id={0}".format(params.id))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Lamp(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.updateById())
 
     @bp.route("/lamp/del", methods=["POST", "GET"])
     def lampDelete():
-        params = Lamp(db, request, pops="id")
-        optRes = params.model.delete(clause="where id={0}".format(params.id))
-        # print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Lamp(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.deleteById())
+
+    @bp.route("/host", methods=["POST", "GET"])
+    def host():
+        return render("web/dev/host.html")
+
+    @bp.route("/host/list", methods=["POST", "GET"])
+    def hostList():
+        params = Host(db, request, pops="id")
+        return json.dumps(params.findBy("exhibit"))
+
+    @bp.route("/host/add", methods=["POST", "GET"])
+    def hostAdd():
+        params = Host(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.insert())
+
+    @bp.route("/host/update", methods=["POST", "GET"])
+    def hostUpdate():
+        params = Host(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.updateById())
+
+    @bp.route("/host/del", methods=["POST", "GET"])
+    def hostDelete():
+        params = Host(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.deleteById())
 
     @bp.route("/groups", methods=["POST", "GET"])
     def groups():
@@ -64,47 +63,23 @@ def add_route(bp, **f):
     @bp.route("/groups/list", methods=["POST", "GET"])
     def groupsList():
         params = Groups(db, request, pops="id")
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
         # return json.dumps(res, default=lambda o: o.__dict__)
-        return json.dumps(res)
+        return json.dumps(params.findBy("exhibit"))
 
     @bp.route("/groups/add", methods=["POST", "GET"])
     def groupsAdd():
-        params = Groups(db, request, pops="id")
-        optRes = params.model.insert(dict(params))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        optRes["data"] = res["data"]
-
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Groups(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.insert())
 
     @bp.route("/groups/update", methods=["POST", "GET"])
     def groupsUpdate():
-        params = Groups(db, request, pops="id")
-        optRes = params.model.update(dict(params), clause="where id={0}".format(params.id))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Groups(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.updateById())
 
     @bp.route("/groups/del", methods=["POST", "GET"])
     def groupsDelete():
-        params = Groups(db, request, pops="id")
-        optRes = params.model.delete(clause="where id={0}".format(params.id))
-        # print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Groups(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.deleteById())
 
     @bp.route("/infrared", methods=["POST", "GET"])
     def infrared():
@@ -113,47 +88,22 @@ def add_route(bp, **f):
     @bp.route("/infrared/list", methods=["POST", "GET"])
     def infraredList():
         params = Infrared(db, request, pops="id")
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        # return json.dumps(res, default=lambda o: o.__dict__)
-        return json.dumps(res)
+        return json.dumps(params.findBy("exhibit"))
 
     @bp.route("/infrared/add", methods=["POST", "GET"])
     def infraredAdd():
-        params = Infrared(db, request, pops="id")
-        optRes = params.model.insert(dict(params))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        optRes["data"] = res["data"]
-
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Infrared(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.insert())
 
     @bp.route("/infrared/update", methods=["POST", "GET"])
     def infraredUpdate():
-        params = Infrared(db, request, pops="id")
-        optRes = params.model.update(dict(params), clause="where id={0}".format(params.id))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Infrared(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.updateById())
 
     @bp.route("/infrared/del", methods=["POST", "GET"])
     def infraredDelete():
-        params = Infrared(db, request, pops="id")
-        optRes = params.model.delete(clause="where id={0}".format(params.id))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Infrared(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.deleteById())
 
     @bp.route("/serial_port", methods=["POST", "GET"])
     def serial_port():
@@ -162,44 +112,19 @@ def add_route(bp, **f):
     @bp.route("/serial_port/list", methods=["POST", "GET"])
     def serial_portList():
         params = Serial_port(db, request, pops="id")
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        # return json.dumps(res, default=lambda o: o.__dict__)
-        return json.dumps(res)
+        return json.dumps(params.findBy("exhibit"))
 
     @bp.route("/serial_port/add", methods=["POST", "GET"])
     def serial_portAdd():
-        params = Serial_port(db, request, pops="id")
-        optRes = params.model.insert(dict(params))
-        print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        print("res:>>", res)
-        optRes["data"] = res["data"]
-
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Serial_port(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.insert())
 
     @bp.route("/serial_port/update", methods=["POST", "GET"])
     def serial_portUpdate():
-        params = Serial_port(db, request, pops="id")
-        optRes = params.model.update(dict(params), clause="where id={0}".format(params.id))
-        # print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Serial_port(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.updateById())
 
     @bp.route("/serial_port/del", methods=["POST", "GET"])
     def serial_portDelete():
-        params = Serial_port(db, request, pops="id")
-        optRes = params.model.delete(clause="where id={0}".format(params.id))
-        # print("optRes:>>", optRes)
-        orderBy = "order by number ASC,id DESC"
-        clause = "where exhibit={0} {1}".format(params.exhibit, orderBy)
-        res = params.model.find("*", clause=clause)
-        optRes["data"] = res["data"]
-        return json.dumps(optRes if not optRes["success"] else res)
+        params = Serial_port(db, request, pops="id", byNames="exhibit")
+        return json.dumps(params.deleteById())
