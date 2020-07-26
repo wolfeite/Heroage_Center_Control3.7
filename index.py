@@ -11,7 +11,7 @@ if __name__ == "__main__":
     gui.init()
     db = SqliteDb("data/db/ccs.db")
     # httpApp = create_http_app(gui)
-    httpApp = createFlaskApp({"host": "0.0.0.0", "debug": False, "port": 3500}, template_folder="data/view",
+    httpApp = createFlaskApp({"host": "0.0.0.0", "debug": False, "port": 5000}, template_folder="data/view",
                              static_folder="data/statics")
     httpApp.attr = ("gui", gui)
     httpApp.attr = ("db", db)

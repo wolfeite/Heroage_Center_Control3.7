@@ -3,13 +3,14 @@ from libs.IO import Movie, File
 import time
 from app.models.Content import Content, Content_video, Content_image, Content_web, Content_welcome, Content_cover
 from app.models.Content import Content_saver, Content_caption
-from app.models.Material import Video, Image
+from app.models.Material import Video, Image, Voice
 from app.models.Set import Exhibit, Theme
+from app.models.Account import Account
 from libs.Viewer import Request
 import os
 
 def add_route(bp, **f):
-    render, db, request, url_for = f["render_template"], f["db"], f["request"], f["url_for"]
+    render, db, request, url_for, session = f["render_template"], f["db"], f["request"], f["url_for"], f["session"]
     @bp.route("/", methods=["POST", "GET"])
     def content():
         return render("web/content/index.html")
@@ -29,8 +30,21 @@ def add_route(bp, **f):
     @bp.route("/theme", methods=["POST", "GET"])
     def contentTheme():
         params = Theme(db, request, pops="id")
+        user = session["user"]
+        account = Account(db, request)
+        res = account.model.find("*", clause="where id={0}".format(user["id"]))["data"]
+        if int(res[0]["rank"]) >= 800:
+            return json.dumps(params.findBy())
+        else:
+            resTheme = json.loads(res[0]["theme"])
+            ids = []
+            for idKey in resTheme:
+                ids.append("id={0}".format(int(idKey)))
+            idsStr = " or ".join(ids)
+            optRes = params.model.find("*", clause="where {0}".format(idsStr))
+            return json.dumps(optRes)
         # res = params.model.find("*", clause="order by number ASC,id DESC")
-        return json.dumps(params.findBy())
+        # return json.dumps(params.findBy())
 
     @bp.route("/links", methods=["POST", "GET"])
     def contentLinks():
@@ -380,26 +394,28 @@ def add_route(bp, **f):
     def captionAdd():
         params = Content_caption(db, request, pops="id", byNames=("theme", "content"))
         file = File(os.path.join("data", "statics"))
-        path = file.up(request, "path", "image")
-        params.path = "image/{0}".format(path)
+        path = file.up(request, "path", "voice")
+        params.path = "voice/{0}".format(path)
         if path:
-            image = Image(db, request, pops="id")
-            size = file.size(("image", path))
+            voice = Voice(db, request, pops="id")
+            size = file.size(("voice", path))
             name = params.get("name", "")
-            image.model.insert({"number": 1, "name": name, "path": params.path, "label": 0, "size": size})
+            voice.model.insert(
+                {"number": 1, "name": name, "path": params.path, "label": 0, "time": voice.param("time"), "size": size})
         return json.dumps(params.insert())
 
     @bp.route("/caption/update", methods=["POST", "GET"])
     def captionUpdate():
         params = Content_caption(db, request, pops="id", byNames=("theme", "content"))
         file = File(os.path.join("data", "statics"))
-        path = file.up(request, "path", "image")
+        path = file.up(request, "path", "voice")
         if path:
-            image = Image(db, request, pops="id")
-            params.path = "image/{0}".format(path)
-            size = file.size(("image", path))
+            voice = Voice(db, request, pops="id")
+            params.path = "voice/{0}".format(path)
+            size = file.size(("voice", path))
             name = params.get("name", "")
-            image.model.insert({"number": 1, "name": name, "path": params.path, "label": 0, "size": size})
+            voice.model.insert(
+                {"number": 1, "name": name, "path": params.path, "label": 0, "time": voice.param("time"), "size": size})
         else:
             params.pops("path")
         return json.dumps(params.updateById())

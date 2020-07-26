@@ -2,6 +2,8 @@
 # from flask import jsonify, url_for, session
 from app.models.Account import Account
 import time
+from app.models.Set import Theme
+import json
 
 def add_route(bp, **f):
     render, db, request = f["render_template"], f["db"], f["request"]
@@ -51,5 +53,9 @@ def add_route(bp, **f):
             account.number = 1
             account.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             # account.insert(author.__dict__)
+            theme = Theme(db, request)
+            optRes = theme.findBy()["data"]
+            account.theme = json.dumps([optRes[0]["id"]] if len(optRes) > 0 else [])
             account.model.insert(dict(account))
+
             return redirect(url_for("sign.login"))

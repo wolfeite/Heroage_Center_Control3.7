@@ -2,6 +2,9 @@ import os
 import json
 import time
 import requests
+from libs.IO import File
+import ast
+from app.models.Account import Account
 
 class Dev:
     def __init__(self):
@@ -28,6 +31,20 @@ def filterDev(data):
 
 def add_route(bp, **f):
     render, db, request, redirect = f["render_template"], f["db"], f["request"], f["redirect"]
+    # app 用户验证
+    @bp.route("/sign", methods=["POST", "GET"])
+    def sign():
+        account = Account(db, request, pops="id")
+        # account = db.models["account"]
+        clause = "where name='{0}' and password='{1}'".format(account.name, account.password)
+        res = account.model.find("*", clause=clause)
+        if len(res["data"]) > 0:
+            res["data"][0].pop("password")
+        else:
+            res["msg"] = "账号或密码错误"
+            res["success"] = False
+        return json.dumps(res)
+
     # 版本更新
     @bp.route("/update", methods=["POST", "GET"])
     def updated():
@@ -67,33 +84,53 @@ def add_route(bp, **f):
         return json.dumps({"success": True, "msg": "下载成功"})
         # return f["render_template"]("templates/form.html")
 
-    # 下载数据库请求处理
-    @bp.route("/down/db/<path:filename>", methods=["POST", "GET"])
-    def common(filename):
-        # 普通下载
-        print(">>>>开始普通下载！")
-        dirpath = os.path.join(f["request"].app["root"], 'data', "db")
-        print(">>>", f["request"].app["root"], dirpath, filename)
+    # 下载素材
+    @bp.route("/down/<path:type>/<path:filename>", methods=["POST", "GET"])
+    def downMaterial(type, filename, outName=None):
+        print(">>>>开始普通下载！", type, filename)
+        paths = ["data"]
+        if type == "db":
+            paths.append(type)
+        elif type in ["video", "image"]:
+            paths.extend(["statics", type])
+        elif type in ["ppt", "pdf"]:
+            names = filename.split("/")
+            dirName = names[0]
+            filename = names[1]
+            paths.extend(["statics", type, dirName])
+        dirpath = os.path.join(f["request"].app["root"], *paths)
+        print(">>>下载路径为：", dirpath, filename, f["request"].app["root"])
         # send_from_directory其他配置项：mimetype=mimetype,cache_timeout=30*60
         response = f["make_response"](f["send_from_directory"](dirpath, filename, as_attachment=True))
         # 处理中文路径问题，不过尽量避免中文路径
-        response.headers["Content-Disposition"] = "attachment; filename={}".format(dirpath.encode().decode('latin-1'))
+        outName = outName if outName else filename
+        response.headers["Content-Disposition"] = "attachment; filename={}".format(outName.encode().decode('latin-1'))
+        # response.headers["Content-Disposition"] = "attachment; filename={}".format(dirpath.encode().decode('latin-1'))
         return response
-        # return f["render_template"]("templates/form.html")
 
-    # 下载视频文件
-    @bp.route("/down/video/<path:filename>", methods=["POST", "GET"])
-    def downVideo(filename):
-        # 普通下载
-        print(">>>>开始普通下载！")
-        dirpath = os.path.join(f["request"].app["root"], 'data', "statics", "video")
-        print(">>>", f["request"].app["root"], dirpath, filename)
+    # 下载站点资源
+    @bp.route("/app", methods=["POST", "GET"])
+    def app():
+        # dirpath = os.path.join(f["request"].app["root"], "website", "app.html")
+        # print(">>>加载：", dirpath)
+        # send_from_directory其他配置项：mimetype=mimetype,cache_timeout=30*60
+        # return render(dirpath)
+        return render("web/app.html")
+
+    @bp.route("/website/<path:filename>", methods=["POST", "GET"])
+    def downWebSite(filename, outName=None):
+        print(">>>>开始站点资源下载！", type, filename)
+        paths = ["website", "soft"]
+        dirpath = os.path.join(f["request"].app["root"], *paths)
+        print(">>>下载路径为：", dirpath, filename, f["request"].app["root"])
         # send_from_directory其他配置项：mimetype=mimetype,cache_timeout=30*60
         response = f["make_response"](f["send_from_directory"](dirpath, filename, as_attachment=True))
         # 处理中文路径问题，不过尽量避免中文路径
-        response.headers["Content-Disposition"] = "attachment; filename={}".format(dirpath.encode().decode('latin-1'))
+        outName = outName if outName else filename
+        response.headers["Content-Disposition"] = "attachment; filename={}".format(
+            outName.encode().decode('latin-1'))
+        # response.headers["Content-Disposition"] = "attachment; filename={}".format(dirpath.encode().decode('latin-1'))
         return response
-        # return f["render_template"]("templates/form.html")
 
     # 设备信息获取
     @bp.route("/dev", methods=["POST", "GET"])
@@ -101,22 +138,13 @@ def add_route(bp, **f):
         res = {
             "success": True,
             "msg": "查询设备成功",
-            "data": {"lamp": {}, "groups": {}, "infrared": {}, "serial_port": {}}
+            "data": {"lamp": {}, "host": {}, "groups": {}, "infrared": {}, "serial_port": {}, "exhibit": {}}
         }
         orderBy = "order by number ASC,id DESC"
-        lamp = db.models["lamp"]
-        res["data"]["lamp"] = filterDev(lamp.find("*", clause=orderBy)["data"])
-        infrared = db.models["infrared"]
-        res["data"]["infrared"] = filterDev(infrared.find("*", clause=orderBy)["data"])
-        groups = db.models["groups"]
-        res["data"]["groups"] = filterDev(groups.find("*", clause=orderBy)["data"])
-        serial_port = db.models["serial_port"]
-        res["data"]["serial_port"] = filterDev(serial_port.find("*", clause=orderBy)["data"])
-        # orderBy = "group by exhibit order by number ASC,id DESC"
+        for key in res["data"]:
+            table = db.models[key]
+            res["data"][key] = table.find("*", clause=orderBy)["data"]
 
-        # res = lamp.find("dev(exhibit,number,port)", clause=orderBy, create_aggregate=("dev", -1, Dev))
-        # res = lamp.find("*", clause=orderBy)
-        # res["data"] = filterDev(res["data"])
         print("获取到的DEV》》", res)
         return json.dumps(res)
 
@@ -142,30 +170,83 @@ def add_route(bp, **f):
         res = {
             "success": True,
             "msg": "查询内容成功",
-            "data": {}
+            "data": {"theme": {}, "content_video": {}, "content_image": {}, "content_web": {}, "content_welcome": {},
+                     "content_cover": {}, "content_saver": {}, "content_caption": {}}
         }
-        orderBy = "order by number ASC,id DESC".format(content_id)
+        orderBy = "order by number ASC,id DESC"
         caluse = "where content={0} {1}".format(content_id, orderBy)
-        theme = db.models["theme"]
-        res["data"]["theme"] = theme.find("*", clause=orderBy)["data"]
-        content_video = db.models["content_video"]
-        res["data"]["content_video"] = content_video.find("*", clause=caluse)["data"]
-        content_image = db.models["content_image"]
-        res["data"]["content_image"] = content_image.find("*", clause=caluse)["data"]
-        content_web = db.models["content_web"]
-        res["data"]["content_web"] = content_web.find("*", clause=caluse)["data"]
-        content_welcome = db.models["content_welcome"]
-        res["data"]["content_welcome"] = content_welcome.find("*", clause=caluse)["data"]
-        content_cover = db.models["content_cover"]
-        res["data"]["content_cover"] = content_cover.find("*", clause=caluse)["data"]
-        content_saver = db.models["content_saver"]
-        res["data"]["content_saver"] = content_saver.find("*", clause=caluse)["data"]
-        content_caption = db.models["content_caption"]
-        res["data"]["content_caption"] = content_caption.find("*", clause=caluse)["data"]
-        print("获取到的内容详情》》", res, content_id)
+        for key in res["data"]:
+            table = db.models[key]
+            useBy = orderBy if key == "theme" else caluse
+            res["data"][key] = table.find("*", clause=useBy)["data"]
+
         return json.dumps(res)
 
     @bp.route("/other", methods=["POST", "GET"])
     def other():
         print("other 参数》》", f["request"].role.params)
         return f["render_template"]("templates/jsTable.html")
+
+    # 屏幕节目单
+    @bp.route("/detail", methods=["POST", "GET"])
+    def detail():
+        res = {}
+        orderBy = "order by number ASC,id DESC"
+        content = db.models["content"]
+        cData = content.find("id,name,tag", clause=orderBy)["data"]
+        tables = ["content_video", "content_image", "content_web", "content_welcome"]
+        for val in cData:
+            id = val["id"]
+            res[id] = {"name": val["name"], "tag": val["tag"], "data": {}}
+            caluse = "where content={0} {1}".format(id, orderBy)
+            for key in tables:
+                item = ["id", "name", "path"]
+                if key == "content_video":
+                    item.append("time")
+                elif key == "content_welcome":
+                    item.remove("name")
+                    item.extend(["title", "sub_title"])
+                elif key == "content_web":
+                    item.remove("path")
+                    item.append("url")
+                table = db.models[key]
+                res[id]["data"][key] = table.find(",".join(item), clause=caluse)["data"]
+        print("所有屏幕节目单为{0}".format(res))
+        return json.dumps(res)
+
+    # 日志信息
+    @bp.route("/log/<path:date>", methods=["POST", "GET"])
+    def log(date):
+        file = File(os.path.join("log"))
+        res = list(filter(lambda val: "【 WS发送 】" in val, file.readLines(date)))
+        open, close, video, image, web, welcome, = [], [], [], [], [], []
+
+        for val in res:
+            logStr = val.split(" ( ")
+            time = logStr[0].split("####")[0].rstrip(":")
+            jsonInfo = ast.literal_eval(logStr[1].split(" ) ")[0])
+            jsonInfo["time"] = time
+            if jsonInfo.get("act") == "ehcc_open":
+                open.append(jsonInfo)
+            elif jsonInfo.get("act") == "ehcc_close":
+                close.append(jsonInfo)
+            else:
+                key = jsonInfo.get("key")
+                data = {
+                    "tag": jsonInfo.get("to"), "number": jsonInfo.get("number", 0), "time": jsonInfo.get("time")
+                }
+                if key == "play":
+                    video.append(data)
+                elif key in ["image_show", "image_next", "image_pre"]:
+                    image.append(data)
+                elif key in ["web_show", "web_next", "web_pre"]:
+                    web.append(data)
+                elif key == "word_open":
+                    welcome.append(data)
+        openInfo = open[0]["time"] if len(open) > 0 else ""
+        closeInfo = close[len(close) - 1]["time"] if len(close) > 0 else ""
+        info = {
+            "open": openInfo, "close": closeInfo, "video": video, "image": image, "web": web, "welcome": welcome
+        }
+        print("读取{0}的结果为{1}".format(date, info))
+        return json.dumps(info)

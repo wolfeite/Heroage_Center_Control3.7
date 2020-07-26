@@ -88,39 +88,39 @@
             <input type="hidden" name="exhibit" value=""/>
             <div class="card-body">
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">序号：</label>
+                    <label class="col-sm-3 col-form-label">序号*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="number">
+                        <input type="text" class="form-control" placeholder="APP上按钮位置，示例1" value="" name="number">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">名称：</label>
+                    <label class="col-sm-3 col-form-label">名称*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="name">
+                        <input type="text" class="form-control" placeholder="APP按钮名字" value="" name="name">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">屏编号：</label>
+                    <label class="col-sm-3 col-form-label">标识*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="tag">
+                        <input type="text" class="form-control" placeholder="示例：v1" value="" name="tag">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">屏IP：</label>
+                    <label class="col-sm-3 col-form-label">屏宽*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="ip">
+                        <input type="text" class="form-control" placeholder="设备真实像素宽" value="" name="width">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">屏宽：</label>
+                    <label class="col-sm-3 col-form-label">屏高*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="width">
+                        <input type="text" class="form-control" placeholder="设备真实像素高" value="" name="height">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">屏高：</label>
+                    <label class="col-sm-3 col-form-label">屏IP*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="height">
+                        <input type="text" class="form-control" placeholder="本地地址" value="" name="ip">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -187,6 +187,12 @@
                         <input type="text" class="form-control" placeholder="请输入" value="" name="scale">
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">内容类型：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="content_type">
+                    </div>
+                </div>
             </div>
         </form>
     {% endmacro %}
@@ -198,7 +204,7 @@
         {{ formModal("update_") }}
     {% endcall %}
     {% call delModal() %}
-        <p>该展厅的所有相关配置都将删除！</p>
+        <p>该内容的所有相关配置都将删除！</p>
         <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
             <input type="hidden" name="id" value=""/>
             <input type="hidden" name="exhibit" value=""/>
@@ -241,21 +247,33 @@
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "exhibit", type: "number", width: 30, align: "left", title: "展厅", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
-            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
-            {name: "tag", type: "text", width: 80, align: "center", title: "屏幕编号"},
-            {name: "ip", type: "text", width: 80, align: "center", title: "屏幕IP"},
+            {name: "name", type: "text", width: 50, align: "center", title: "名称"},
+            {name: "tag", type: "text", width: 80, align: "center", title: "标识"},
+            {name: "ip", type: "text", width: 80, align: "center", title: "IP"},
             {name: "width", type: "number", width: 50, align: "center", title: "屏宽", visible: false},
             {name: "height", type: "number", width: 50, align: "center", title: "屏高", visible: false},
             {name: "play", type: "text", width: 80, align: "center", title: "默认播放", visible: false},
             {name: "volume", type: "text", width: 80, align: "center", title: "播放音量", visible: false},
-            {name: "loop", type: "text", width: 80, align: "center", title: "循环否0/是1", visible: false},
+            {
+                name: "loop", type: "text", width: 80, align: "center", title: "循环", visible: false,
+                itemTemplate: function (value, item) {
+                    return value == 0 ? "否" : "是"
+                }
+            },
             {name: "cover_play", type: "text", width: 80, align: "center", title: "封面播放模式", visible: false},
-            {name: "display", type: "text", width: 80, align: "center", title: "隐藏0/显示1"},
+            {
+                name: "display", type: "text", width: 50, align: "center", title: "显示",
+                itemTemplate: function (value, item) {
+                    return value == 0 ? "否" : "是"
+                }
+            },
             {name: "style", type: "text", width: 50, align: "center", title: "样式", visible: false},
             {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
             {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
             {name: "scale", type: "number", width: 50, align: "center", title: "缩放", visible: false},
-            {name: "links", type: "text", width: 50, align: "center", title: "关联", visible: false}
+            {name: "links", type: "text", width: 50, align: "center", title: "关联", visible: false},
+            {name: "content_type", type: "text", width: 50, align: "center", title: "第三方控制", visible: false},
+            {name: "time", type: "text", width: 80, align: "center", title: "同步时间"},
         ]
 
         createContentApp(columns, url)

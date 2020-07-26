@@ -20,12 +20,19 @@ class Ui_UI(object):
         self.centralWidget = QtWidgets.QWidget(UI)
         self.centralWidget.setObjectName("centralWidget")
         self.label = QtWidgets.QLabel(self.centralWidget)
-        self.label.setGeometry(QtCore.QRect(60, 40, 251, 41))
+        self.label.setGeometry(QtCore.QRect(60, 20, 251, 41))
         font = QtGui.QFont()
         font.setFamily("Alef")
-        font.setPointSize(28)
+        font.setPointSize(22)
         self.label.setFont(font)
         self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralWidget)
+        self.label_2.setGeometry(QtCore.QRect(60, 60, 161, 31))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(16)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
         UI.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(UI)
@@ -35,6 +42,7 @@ class Ui_UI(object):
         _translate = QtCore.QCoreApplication.translate
         UI.setWindowTitle(_translate("UI", "中控后台系统V4.1"))
         self.label.setText(_translate("UI", "服务启动成功！"))
+        self.label_2.setText(_translate("UI", "端口：5000"))
 
 
 if __name__ == "__main__":

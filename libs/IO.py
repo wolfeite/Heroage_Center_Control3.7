@@ -70,22 +70,38 @@ class File():
         else:
             return str(round(size, 3)) + 'B'
 
-    def read(self, fileName):
-        if not fileName:
-            return False
+    def file_path(self, fileName):
         url = os.path.join(self.dir, fileName)
-        self.url = url
-        with open(url, 'r', encoding='utf-8') as f:
-            content = f.read()
-            if content.startswith(u'\ufeff'):
-                content = content.encode('utf8')[3:].decode('utf8')
-            self.result = json.loads(content)
-            return self.result
+        res = False
+        if os.path.isfile(url):
+            self.url = url
+            res = url
+        return res
+
+    def readLines(self, fileName, encoding="utf-8", newline=False):
+        url = self.file_path(fileName)
+        if url:
+            with open(url, "r", encoding=encoding, errors='ignore') as f:
+                # res = f.readlines()#带有\n
+                res = f.read().splitlines(newline)
+            return res
+
+    def read2json(self, fileName):
+        url = self.file_path(fileName)
+        if url:
+            with open(url, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if content.startswith(u'\ufeff'):
+                    content = content.encode('utf8')[3:].decode('utf8')
+                self.result = json.loads(content)
+                return self.result
+
     def _wr(self, url=""):
         url = self.url if not url == "" else url
         if not self.result:
             return False
         print("开始写入文件", url)
+        # with open(url, "w", encoding='utf-8',newline='\n') as f:
         with open(url, "w", encoding='utf-8') as f:
             json.dump(self.result, f, indent=4, ensure_ascii=False)
 

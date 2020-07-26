@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Mark桌面后台</title>
+    <title>中控展厅后台</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link REL="SHORTCUT ICON" HREF="{{ url_for('static',filename='images/icon.ico/') }}"/>
@@ -25,7 +25,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="#"><b>CCS</b><span style="font-size: 20px">后台</span></a>
+        <a href="#"><b>中控展厅</b><span style="font-size: 20px">后台</span></a>
     </div>
     <!-- /.login-logo -->
     <div class="card">
@@ -58,6 +58,11 @@
                     <div class="col-12" style="margin-top:10px;">
                         <button type="button" class="btn btn-block btn-secondary" onclick="location.href='/sign/upper'">
                             进入注册
+                        </button>
+                    </div>
+                    <div class="col-12" style="margin-top:10px;">
+                        <button type="button" class="btn btn-block btn-secondary" onclick="location.href='/api/app'">
+                            资源下载
                         </button>
                     </div>
                 </div>

@@ -77,35 +77,31 @@
             <input type="hidden" name="exhibit" value=""/>
             <div class="card-body">
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">序号：</label>
+                    <label class="col-sm-3 col-form-label">序号*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="number">
+                        <input type="text" class="form-control" placeholder="APP上按钮位置，示例1" value="" name="number">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">名称：</label>
+                    <label class="col-sm-3 col-form-label">名称*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="name">
+                        <input type="text" class="form-control" placeholder="APP按钮名字" value="" name="name">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">编号：</label>
+                    <label class="col-sm-3 col-form-label">标识*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="tag">
+                        <input type="text" class="form-control" placeholder="两位数值，示例：01" value="" name="tag">
                     </div>
                 </div>
 
-                <div class="form-group clearfix">
-                    <label style="margin-right:55px">类型：</label>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}typeRadio1" name="type" value=0>
-                        <label for="{{ prefix }}typeRadio1">灯光&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                    </div>
-                    <div class="icheck-primary d-inline">
-                        <input type="radio" id="{{ prefix }}typeRadio2" name="type" value=1>
-                        <label for="{{ prefix }}typeRadio2">设备&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">类型：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="type">
                     </div>
                 </div>
+
                 <div class="form-group row">
                     <label class="col-sm-3 col-form-label">开延迟：</label>
                     <div class="col-sm-9">
@@ -159,7 +155,7 @@
         {{ formModal("update_") }}
     {% endcall %}
     {% call delModal() %}
-        <p>该展厅的所有相关配置都将删除！</p>
+        <p>该红外的所有相关配置都将删除！</p>
         <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
             <input type="hidden" name="id" value=""/>
             <input type="hidden" name="exhibit" value=""/>
@@ -187,8 +183,8 @@
             {name: "exhibit", type: "number", width: 30, align: "left", title: "展厅", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
             {name: "name", type: "text", width: 160, align: "center", title: "名称"},
-            {name: "tag", type: "number", width: 50, align: "center", title: "编号"},
-            {name: "type", type: "text", width: 80, align: "center", title: "灯光0/设备1"},
+            {name: "tag", type: "number", width: 50, align: "center", title: "标识"},
+            {name: "type", type: "text", width: 80, align: "center", title: "类型"},
             {name: "delay_start", type: "number", width: 50, align: "center", title: "开延迟", visible: false},
             {name: "delay_end", type: "number", width: 50, align: "center", title: "关延迟", visible: false},
             {name: "grouped", type: "number", width: 50, align: "center", title: "所属组", visible: false},

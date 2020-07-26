@@ -198,6 +198,11 @@ function createContentApp(columns, url) {
         fields: fields
     });
 
+    var $addBtn = $("#addBtn").on("click", function () {
+        addForm[0].reset();
+        addForm.find("[type='radio'][name='loop']").eq(0).prop("checked", true);
+        addForm.find("[type='radio'][name='display']").eq(1).prop("checked", true);
+    })
 
     //新增
     addOpt.on("click", function (e) {

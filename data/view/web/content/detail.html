@@ -159,9 +159,9 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">序号：</label>
+                    <label class="col-sm-3 col-form-label">序号*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="number">
+                        <input type="text" class="form-control" placeholder="内容顺序，不可重复，示例：1" value="" name="number">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -184,6 +184,10 @@
                     </div>
                     <video controls="controls" name="preVideo"
                            style="display: none;width:100%;height:200px;margin-top: 16px;"></video>
+                    <audio id="audio-element" controls name="preAudio" src=""
+                           style="display: none;width:100%;height:50px;margin-top: 16px;">
+                        <!--<source src="" type="audio/mpeg"> -->
+                    </audio>
                     <input type="hidden" name="time" value="0">
                 </div>
                 <div class="form-group row">
@@ -378,7 +382,7 @@
         {{ formModal("update_") }}
     {% endcall %}
     {% call delModal() %}
-        <p>该展厅的所有相关配置都将删除！</p>
+        <p>该内容详情下相关配置将删除！</p>
         <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
             <input type="hidden" name="id" value=""/>
             <input type="hidden" name="content" value=""/>

@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, abort, g, redirect, url_for, session
 import copy
 
-def filterPath(request, other=None):
-    path = request.path
-    other = str(other) if other else "None"
-    return path.startswith("/favicon.ico") or path.startswith("/statics") or path.startswith(other)
+def filterPath(request, *args):
+    ignore = ["/favicon.ico", "/statics", "/sign", "/api"]
+    ignore = ignore + list(args)
+    res = False
+    for key in ignore:
+        if request.path.startswith(key):
+            res = True
+            break
+    return res
 
 def filter(flaskApp, **f):
     print("app>>>>>>>httpServer", flaskApp)
@@ -15,7 +20,7 @@ def filter(flaskApp, **f):
         # if request.path == "/favicon.ico":
         #     # abort(200)
 
-        if filterPath(request, "/sign"):
+        if filterPath(request):
             return None
 
         user = session.get("user")
@@ -27,8 +32,6 @@ def filter(flaskApp, **f):
 
     @flaskApp.before_request
     def parserAside():
-        if filterPath(request, "/sign"):
-            return None
         # rootAside = copy.deepcopy(flaskApp.config["ASIDE"])
         aside = flaskApp.config["ASIDE"]
         rootAside = []
@@ -40,6 +43,9 @@ def filter(flaskApp, **f):
         request.app["root"] = flaskApp.root_path
         request.app["pathsName"] = []
 
+        if filterPath(request):
+            return None
+
         for val in rootAside:
             request.path.startswith(val["url"]) and request.app["pathsName"].append(val["title"])
             if val.get("item") and len(val["item"]) > 0:
@@ -48,7 +54,7 @@ def filter(flaskApp, **f):
 
     @flaskApp.before_request
     def pathsFilter():
-        if filterPath(request, "/sign"):
+        if filterPath(request):
             return None
         path = request.path
         startWith = path.split("/", 3)[1]
@@ -65,7 +71,7 @@ def filter(flaskApp, **f):
 
     @flaskApp.after_request
     def excp(response):
-        if not filterPath(request, "/sign"):
+        if not filterPath(request):
             print("《《《《app请求结果处理器", request.path, response)
         return response
     # register_route(app)
@@ -81,7 +87,7 @@ def filter(flaskApp, **f):
         def error_404(error_info):
             # werkzeug.exceptions.InternalServerError
             # werkzeug.exceptions.NotFound
-            if not filterPath(request, "/sign"):
+            if not filterPath(request):
                 print("request:", type(error_info), request.path)
             return render_template("templates/error.html", error=error_info)
 
@@ -89,7 +95,7 @@ def filter(flaskApp, **f):
         def error_other(error):
             """这个handler可以catch住所有的abort(500)和raise exeception."""
             response = dict(status=0, message="500 Error")
-            if not filterPath(request, "/sign"):
+            if not filterPath(request):
                 print("other_error:", type(error), ">>>>>", error, request.path)
             return render_template("templates/error.html", error=error)
 

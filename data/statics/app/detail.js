@@ -5,16 +5,23 @@ function createDetailApp(contentId) {
     var setPath = function (type) {
         console.log(">>>>", type)
         if (type == "video") {
-            $("[name='path']", [addForm[0], updateForm[0]]).on("change", function (e) {
+            $("[name='path']", [addForm[0], updateForm[0]]).off("change").on("change", function (e) {
                 var el = this, video = el.files[0], url = video ? URL.createObjectURL(video) : "";
                 $("[name='preVideo']", $(this).parents("form")).css("display", "block").attr('src', url); //获取文件本地路径 预览视频
-            }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频")
+            }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频：")
             // updateForm.find("[name='path']").on("change", function (e) {
             //     var el = this, video = el.files[0], url = URL.createObjectURL(video);
             //     $("[name='preVideo']").css("display", "block").attr('src', url); //获取文件本地路径 预览视频
             // }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频")
-        } else {
-            $("[name='path']", [addForm[0], updateForm[0]]).off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+        } else if (type == "image") {
+            $("[name='path']", [addForm[0], updateForm[0]]).off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片：")
+            // addForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+            // updateForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+        } else if (type == "caption") {
+            $("[name='path']", [addForm[0], updateForm[0]]).off("change").on("change", function () {
+                var el = this, audio = el.files[0], url = audio ? URL.createObjectURL(audio) : "";
+                $("[name='preAudio']", $(this).parents("form")).css("display", "block").attr('src', url); //获取文件本地路径 预览音频
+            }).attr("accept", "audio/mpeg").parents(".form-group").children("label").text("音频：")
             // addForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
             // updateForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
         }
@@ -72,7 +79,7 @@ function createDetailApp(contentId) {
     var updateOptClose = $("#updateOptClose")
     var updateModalBtn = $("#updateModalBtn")
 
-    $("[name='preVideo']", [addForm[0], updateForm[0]]).on("canplaythrough", function (e) {
+    $("[name='preVideo'],[name='preAudio']", [addForm[0], updateForm[0]]).on("canplaythrough canplay", function (e) {
         var el = this, time = el.duration;
         var hour = parseInt(time / 3600);
         var minute = parseInt((time % 3600) / 60);
@@ -154,9 +161,12 @@ function createDetailApp(contentId) {
                             var $el = $(this), type = $el.data("type")
                             if (type == "update") {
                                 updateForm[0].reset()
-                                var preVideo = updateForm.find("[name='preVideo']")
-                                preVideo.css("display", "none").attr('src', '')
-                                item.path && item.path.startsWith("video") && preVideo.css("display", "block").attr('src', $.url_for(item.path))
+                                var media = updateForm.find("[name='preVideo'],[name='preAudio']")
+                                media.css("display", "none").attr('src', '')
+                                if (item.path) {
+                                    item.path.startsWith("video") && media.eq(0).css("display", "block").attr('src', $.url_for(item.path))
+                                    item.path.startsWith("voice") && media.eq(1).css("display", "block").attr('src', $.url_for(item.path))
+                                }
                                 $("#update_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
                                 updateModalBtn.trigger("click")
                                 updateForm.find(".form-group").css("display", "none")
@@ -226,7 +236,7 @@ function createDetailApp(contentId) {
     var $addBtn = $("#addBtn").on("click", function () {
         addForm[0].reset()
         $("#add_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
-        addForm.find("[name='preVideo']").css("display", "none").attr('src', '')
+        addForm.find("[name='preVideo'],[name='preAudio']").css("display", "none").attr('src', '')
         addForm.find(".form-group").css("display", "none")
         for (var index in  cols[tab]) {
             var file = cols[tab][index], name = file.name

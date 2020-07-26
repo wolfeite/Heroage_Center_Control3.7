@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{ "HCC" if not name else name }}</title>
+    <title>{{ "CCE" if not name else name }}</title>
     <link REL="SHORTCUT ICON" HREF="{{ url_for('static',filename='images/icon.ico/') }}"/>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="{{ url_for('static',filename='plugins/fontawesome-free/css/all.min.css') }}">
@@ -66,7 +66,7 @@
             <img src="{{ url_for('static',filename='images/icon.ico') }}" alt="HeroAge"
                  class="brand-image img-circle elevation-3" style="opacity: .8;width:26px;height:26px">
             <span class="brand-text font-weight-light"
-                  style="font-weight: 900; line-height: 16px;font-size: 16px;">{{ "CCS中控" if not name else name }}</span>
+                  style="font-weight: 900; line-height: 16px;font-size: 16px;">{{ "中控展厅后台" if not name else name }}</span>
         </a>
 
         <!-- Sidebar -->
@@ -80,7 +80,8 @@
                     <a href="#" class="d-block">{{ session.get("user").get("nickname") or "匿名" }}</a>
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block" style="font-size: 12px; padding: 2px 0">修改</a>
+                    <a href="#" class="d-block" style="font-size: 12px; padding: 2px 0"
+                       data-toggle="modal" data-target="#userPwdModal" id="editPwdBtn">修改</a>
                 </div>
             </div>
 
@@ -248,8 +249,52 @@
             v4.1
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2020 <a href="https://adminlte.io">CCS</a>.</strong> 中通服.
+        <strong>Copyright &copy; 2020 <a href="https://adminlte.io">中通服</a>.</strong>
     </footer>
+
+    <div class="modal fade" id="userPwdModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">修改密码</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form role="form" action="#" enctype="multipart/form-data" method="post">
+                        <input type="hidden" name="id" value="{{ session.get("user").get("id") }}"/>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">旧密码*：</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" placeholder="现在的密码" value=""
+                                           name="password">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">新密码*：</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" placeholder="修改后密码" value=""
+                                           name="newpwd">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="editPwdClose">取消</button>
+                    <button type="button" class="btn btn-primary" id="editPwdOpt">确定</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!--
+    <button type="button" class="btn btn-danger" id="delModalBtn" data-toggle="modal" data-target="#userEditModal"
+            style="display:none">删除
+    </button>-->
 </div>
 <!-- ./wrapper -->
 
@@ -279,10 +324,10 @@
                 $selector = $("#exhibitSelector,#themeSelector,#sortSelector")
                 $selector.each(function (i) {
                     var $el = $(this), html = $el.html(), id = this.id,
-                        str = id.startsWith("exhibit") ? "展区" : id.startsWith("theme") ? "主题" : "标签";
+                        str = id.startsWith("exhibit") ? "请先配置展区" : id.startsWith("theme") ? "请先配置或管理员分配主题" : "请先配置标签";
                     console.log("html>>>", html, this.id)
                     if (html == "") {
-                        alert("请先配置" + str)
+                        alert(str)
                         btn.attr("data-target", "")
                     } else {
                         btn.attr("data-target", "#addModal")
@@ -290,6 +335,18 @@
                 })
             })
         }
+
+        var editPwdForm = $("#userPwdModal form")
+        var editPwdClose = $("#editPwdClose")
+        $("#editPwdBtn").click(function () {
+            editPwdForm[0].reset()
+        })
+        $("#editPwdOpt").click(function () {
+            var params = editPwdForm.serialize()
+            $.request({url: "/rights/pwd", data: params, type: "post", tip: true}, function (res) {
+                editPwdClose.trigger("click")
+            })
+        })
     });
     //window.bsCustomFileInput && bsCustomFileInput.init();
 </script>

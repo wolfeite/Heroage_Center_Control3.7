@@ -14,3 +14,7 @@ class Pdf(ViewModel):
 class Ppt(ViewModel):
     def __init__(self, db, request, **con):
         super(Ppt, self).__init__(db, "ppt", request, **con)
+
+class Voice(ViewModel):
+    def __init__(self, db, request, **con):
+        super(Voice, self).__init__(db, "voice", request, **con)

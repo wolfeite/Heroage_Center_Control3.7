@@ -125,7 +125,7 @@ def config_db(app):
         "exhibit": "int not null references exhibit(id) on delete cascade",  # 展区外键
         # "exhibit": "int default 0 references exhibit(id) on delete set default",
         "number": "integer default 1",  # 灯光序号
-        "port": "int not null unique",  # 端口号
+        "port": "text not null",  # 端口号
         "name": "text not null",  # 灯光名称
         "tag": "text not null",  # 灯光标识
         "type": "boolean not null",  # 灯光类型
@@ -180,8 +180,8 @@ def config_db(app):
         # "exhibit": "int default 0 references exhibit(id) on delete set default",
         "number": "integer default 1",  # 红外序号
         "name": "text not null",  # 红外名称
-        "tag": "text unique",  # 红外编号
-        "type": "boolean not null",  # 设备类型
+        "tag": "text not null",  # 红外编号
+        "type": "text not null",  # 设备类型
         "delay_start": "int",  # 红外开机延迟
         "delay_end": "int",  # 红外关机延迟
         "num_start": "int",  # 开次数
@@ -197,8 +197,8 @@ def config_db(app):
         # "exhibit": "int default 0 references exhibit(id) on delete set default",
         "number": "integer default 1",  # 串口序号
         "name": "text not null",  # 串口名称
-        "tag": "text unique",  # 串口编号
-        "type": "boolean not null",  # 串口类型
+        "tag": "text not null",  # 串口编号
+        "type": "text not null",  # 串口类型
         "delay_start": "int",  # 串口开机延迟
         "delay_end": "int",  # 串口关机延迟
         "grouped": "text",  # 所属组
@@ -225,8 +225,9 @@ def config_db(app):
         "scale": "float",  # APP缩放大小
         "offset_x": "int",  # APP偏移X
         "offset_y": "int",  # APP偏移Y
-        "time": "DATE DEFAULT (datetime('now','localtime'))",
-        "links": "json default '[]'"
+        "time": "DATE DEFAULT (datetime('now','localtime'))",  # 更新时间
+        "links": "json default '[]'",  # 关联集合
+        "content_type": "text"  # 内容类型：包含第三方控制，复杂\简易模式
     })
     # 内容详情-视频
     content_video = db.model("content_video", {
@@ -246,7 +247,8 @@ def config_db(app):
         "width": "int",  # 源视频宽
         "height": "int",  # 源视频高
         "action_start": "text",  # 开始播放动作
-        "action_end": "text"  # 结束播放动作
+        "action_end": "text",  # 结束播放动作
+        "time": "text"  # 视频时长
     })
     # 内容详情-图片
     content_image = db.model("content_image", {

@@ -1,5 +1,6 @@
 from app.models.Account import Account
 from app.models.Set import Theme
+from libs.Viewer import Request
 import json
 
 def add_route(bp, **f):
@@ -65,3 +66,18 @@ def add_route(bp, **f):
         res["theme"] = theme["data"]
         optRes["theme"] = theme["data"]
         return json.dumps(optRes if not optRes["success"] else res)
+
+    @bp.route("/pwd", methods=["POST", "GET"])
+    def pwd():
+        newpwd = Request(request).value("newpwd")
+        account = Account(db, request, pops="id")
+        user = account.findBy()["data"]
+        res = {"success": False, "msg": "密码错误"}
+        if len(user) > 0 and account.password == user[0]["password"]:
+            row = {"password": account.md5(newpwd)}
+            # clause = "where name='{0}' and password='{1}'".format(author.name, author.password)
+            optRes = account.model.update(row, clause="where id={0}".format(account.id))
+            res["success"] = optRes["success"]
+            res["msg"] = optRes["msg"]
+
+        return json.dumps(res)

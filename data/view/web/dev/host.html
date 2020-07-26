@@ -77,21 +77,21 @@
             <input type="hidden" name="exhibit" value=""/>
             <div class="card-body">
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">序号：</label>
+                    <label class="col-sm-3 col-form-label">序号*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="number">
+                        <input type="text" class="form-control" placeholder="APP上按钮位置，示例1" value="" name="number">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">主机名称：</label>
+                    <label class="col-sm-3 col-form-label">主机名称*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="name">
+                        <input type="text" class="form-control" placeholder="APP按钮名字" value="" name="name">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">主机标识：</label>
+                    <label class="col-sm-3 col-form-label">主机标识*：</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="tag">
+                        <input type="text" class="form-control" placeholder="pc开头加数值" value="" name="tag">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -158,7 +158,7 @@
         {{ formModal("update_") }}
     {% endcall %}
     {% call delModal() %}
-        <p>该展厅的所有相关配置都将删除！</p>
+        <p>该主机的所有相关配置都将删除！</p>
         <form role="form" action="#" enctype="multipart/form-data" method="post" style="display:none">
             <input type="hidden" name="id" value=""/>
             <input type="hidden" name="exhibit" value=""/>
@@ -190,7 +190,12 @@
             {name: "tag", type: "number", width: 50, align: "center", title: "主机标识"},
             {name: "delay_start", type: "number", width: 50, align: "center", title: "开延迟", visible: false},
             {name: "delay_end", type: "number", width: 50, align: "center", title: "关延迟", visible: false},
-            {name: "display", type: "text", width: 80, align: "center", title: "隐藏0/显示1"},
+            {
+                name: "display", type: "text", width: 80, align: "center", title: "显示",
+                itemTemplate: function (value, item) {
+                    return value == 0 ? "否" : "是"
+                }
+            },
             {name: "style", type: "text", width: 50, align: "center", title: "样式", visible: false},
             {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
             {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},

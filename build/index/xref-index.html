@@ -818,6 +818,7 @@ imports:
  &#8226;   <a href="#PIL.ImageSequence">PIL.ImageSequence</a>
  &#8226;   <a href="#PIL.ImageShow">PIL.ImageShow</a>
  &#8226;   <a href="#PIL.ImageTk">PIL.ImageTk</a>
+ &#8226;   <a href="#PIL.Jpeg2KImagePlugin">PIL.Jpeg2KImagePlugin</a>
  &#8226;   <a href="#PIL.JpegImagePlugin">PIL.JpegImagePlugin</a>
  &#8226;   <a href="#PIL.PaletteFile">PIL.PaletteFile</a>
  &#8226;   <a href="#PIL.PdfParser">PIL.PdfParser</a>
@@ -1855,7 +1856,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#PIL.IcnsImagePlugin">PIL.IcnsImagePlugin</a>
+    <a href="#PIL">PIL</a>
+ &#8226;   <a href="#PIL.IcnsImagePlugin">PIL.IcnsImagePlugin</a>
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
 
   </div>
@@ -4029,7 +4031,7 @@ imports:
     <a href="#app.config">app.config</a>
  &#8226;   <a href="#app.config.secure">app.config.secure</a>
  &#8226;   <a href="#app.config.setting">app.config.setting</a>
- &#8226;   <a href="#app.models.Author">app.models.Author</a>
+ &#8226;   <a href="#app.models.Account">app.models.Account</a>
  &#8226;   <a href="#app.routes">app.routes</a>
  &#8226;   <a href="#app.routes.api">app.routes.api</a>
  &#8226;   <a href="#app.routes.content">app.routes.content</a>
@@ -4117,30 +4119,32 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app.models.Author">app.models.Author</a>
+    <a href="#app.models.Account">app.models.Account</a>
  &#8226;   <a href="#app.models.Content">app.models.Content</a>
  &#8226;   <a href="#app.models.Dev">app.models.Dev</a>
  &#8226;   <a href="#app.models.Material">app.models.Material</a>
  &#8226;   <a href="#app.models.Set">app.models.Set</a>
+ &#8226;   <a href="#app.models.pattern">app.models.pattern</a>
 
   </div>
 
 </div>
 
 <div class="node">
-  <a name="app.models.Author"></a>
-  <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/app/models/Author.py" type="text/plain"><tt>app.models.Author</tt></a>
+  <a name="app.models.Account"></a>
+  <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/app/models/Account.py" type="text/plain"><tt>app.models.Account</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models">app.models</a>
+ &#8226;   <a href="#app.models.pattern">app.models.pattern</a>
  &#8226;   <a href="#hashlib">hashlib</a>
- &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
 
   </div>
   <div class="import">
 imported by:
     <a href="#app">app</a>
  &#8226;   <a href="#app.routes.rights">app.routes.rights</a>
+ &#8226;   <a href="#app.routes.set">app.routes.set</a>
  &#8226;   <a href="#app.routes.sign">app.routes.sign</a>
 
   </div>
@@ -4153,7 +4157,7 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models">app.models</a>
- &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
+ &#8226;   <a href="#app.models.pattern">app.models.pattern</a>
 
   </div>
   <div class="import">
@@ -4170,7 +4174,7 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models">app.models</a>
- &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
+ &#8226;   <a href="#app.models.pattern">app.models.pattern</a>
 
   </div>
   <div class="import">
@@ -4187,12 +4191,13 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models">app.models</a>
- &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
+ &#8226;   <a href="#app.models.pattern">app.models.pattern</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#app.routes.material">app.routes.material</a>
+    <a href="#app.routes.content">app.routes.content</a>
+ &#8226;   <a href="#app.routes.material">app.routes.material</a>
 
   </div>
 
@@ -4204,12 +4209,36 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models">app.models</a>
+ &#8226;   <a href="#app.models.pattern">app.models.pattern</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app.routes.content">app.routes.content</a>
+ &#8226;   <a href="#app.routes.material">app.routes.material</a>
+ &#8226;   <a href="#app.routes.rights">app.routes.rights</a>
+ &#8226;   <a href="#app.routes.set">app.routes.set</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="app.models.pattern"></a>
+  <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/app/models/pattern.py" type="text/plain"><tt>app.models.pattern</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#app.models">app.models</a>
  &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#app.routes.set">app.routes.set</a>
+    <a href="#app.models.Account">app.models.Account</a>
+ &#8226;   <a href="#app.models.Content">app.models.Content</a>
+ &#8226;   <a href="#app.models.Dev">app.models.Dev</a>
+ &#8226;   <a href="#app.models.Material">app.models.Material</a>
+ &#8226;   <a href="#app.models.Set">app.models.Set</a>
 
   </div>
 
@@ -4276,10 +4305,13 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models.Content">app.models.Content</a>
+ &#8226;   <a href="#app.models.Material">app.models.Material</a>
+ &#8226;   <a href="#app.models.Set">app.models.Set</a>
  &#8226;   <a href="#app.routes">app.routes</a>
  &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#libs.IO">libs.IO</a>
  &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
+ &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#time">time</a>
 
   </div>
@@ -4335,8 +4367,8 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.routes">app.routes</a>
+ &#8226;   <a href="#copy">copy</a>
  &#8226;   <a href="#flask">flask</a>
- &#8226;   <a href="#libs.request">libs.request</a>
 
   </div>
   <div class="import">
@@ -4354,9 +4386,11 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#app.models.Material">app.models.Material</a>
+ &#8226;   <a href="#app.models.Set">app.models.Set</a>
  &#8226;   <a href="#app.routes">app.routes</a>
  &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#libs.IO">libs.IO</a>
+ &#8226;   <a href="#os">os</a>
 
   </div>
   <div class="import">
@@ -4373,10 +4407,10 @@ imported by:
   <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/app/routes/rights.py" type="text/plain"><tt>app.routes.rights</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#app.models.Author">app.models.Author</a>
+    <a href="#app.models.Account">app.models.Account</a>
+ &#8226;   <a href="#app.models.Set">app.models.Set</a>
  &#8226;   <a href="#app.routes">app.routes</a>
  &#8226;   <a href="#json">json</a>
- &#8226;   <a href="#time">time</a>
 
   </div>
   <div class="import">
@@ -4393,7 +4427,8 @@ imported by:
   <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/app/routes/set.py" type="text/plain"><tt>app.routes.set</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#app.models.Set">app.models.Set</a>
+    <a href="#app.models.Account">app.models.Account</a>
+ &#8226;   <a href="#app.models.Set">app.models.Set</a>
  &#8226;   <a href="#app.routes">app.routes</a>
  &#8226;   <a href="#json">json</a>
 
@@ -4412,7 +4447,7 @@ imported by:
   <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/app/routes/sign.py" type="text/plain"><tt>app.routes.sign</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#app.models.Author">app.models.Author</a>
+    <a href="#app.models.Account">app.models.Account</a>
  &#8226;   <a href="#app.routes">app.routes</a>
  &#8226;   <a href="#time">time</a>
 
@@ -7835,6 +7870,7 @@ imported by:
  &#8226;   <a href="#PyInstaller.depend.analysis">PyInstaller.depend.analysis</a>
  &#8226;   <a href="#PyInstaller.utils.hooks">PyInstaller.utils.hooks</a>
  &#8226;   <a href="#_sre">_sre</a>
+ &#8226;   <a href="#app.routes.filter">app.routes.filter</a>
  &#8226;   <a href="#argparse">argparse</a>
  &#8226;   <a href="#click._bashcomplete">click._bashcomplete</a>
  &#8226;   <a href="#collections">collections</a>
@@ -13945,7 +13981,7 @@ imports:
 imported by:
     <a href="#PyInstaller.building.utils">PyInstaller.building.utils</a>
  &#8226;   <a href="#PyInstaller.utils.win32.winmanifest">PyInstaller.utils.win32.winmanifest</a>
- &#8226;   <a href="#app.models.Author">app.models.Author</a>
+ &#8226;   <a href="#app.models.Account">app.models.Account</a>
  &#8226;   <a href="#flask.sessions">flask.sessions</a>
  &#8226;   <a href="#hmac">hmac</a>
  &#8226;   <a href="#imageio.plugins._bsdf">imageio.plugins._bsdf</a>
@@ -17419,7 +17455,6 @@ imported by:
  &#8226;   <a href="#libs.Viewer">libs.Viewer</a>
  &#8226;   <a href="#libs.db">libs.db</a>
  &#8226;   <a href="#libs.http">libs.http</a>
- &#8226;   <a href="#libs.request">libs.request</a>
 
   </div>
 
@@ -17436,13 +17471,9 @@ imports:
  &#8226;   <a href="#libs">libs</a>
  &#8226;   <a href="#moviepy.editor">moviepy.editor</a>
  &#8226;   <a href="#os">os</a>
- &#8226;   <a href="#pythoncom">pythoncom</a>
  &#8226;   <a href="#random">random</a>
  &#8226;   <a href="#subprocess">subprocess</a>
  &#8226;   <a href="#sys">sys</a>
- &#8226;   <a href="#win32com">win32com</a>
- &#8226;   <a href="#win32com.client">win32com.client</a>
- &#8226;   <a href="#win32com.client.gencache">win32com.client.gencache</a>
 
   </div>
   <div class="import">
@@ -17484,11 +17515,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app.models.Author">app.models.Author</a>
- &#8226;   <a href="#app.models.Content">app.models.Content</a>
- &#8226;   <a href="#app.models.Dev">app.models.Dev</a>
- &#8226;   <a href="#app.models.Material">app.models.Material</a>
- &#8226;   <a href="#app.models.Set">app.models.Set</a>
+    <a href="#app.models.pattern">app.models.pattern</a>
  &#8226;   <a href="#app.routes.content">app.routes.content</a>
 
   </div>
@@ -17580,22 +17607,6 @@ imports:
   <div class="import">
 imported by:
     <a href="#libs.http">libs.http</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="libs.request"></a>
-  <a target="code" href="///E:/wolfeite/projectPy/heroage/backend/Heroage_Center_Control3.7/libs/request.py" type="text/plain"><tt>libs.request</tt></a>
-<span class="moduletype">SourceModule</span>  <div class="import">
-imports:
-    <a href="#libs">libs</a>
-
-  </div>
-  <div class="import">
-imported by:
-    <a href="#app.routes.filter">app.routes.filter</a>
 
   </div>
 
@@ -25339,7 +25350,9 @@ imported by:
  &#8226;   <a href="#PyQt5">PyQt5</a>
  &#8226;   <a href="#_osx_support">_osx_support</a>
  &#8226;   <a href="#app.routes.api">app.routes.api</a>
+ &#8226;   <a href="#app.routes.content">app.routes.content</a>
  &#8226;   <a href="#app.routes.down">app.routes.down</a>
+ &#8226;   <a href="#app.routes.material">app.routes.material</a>
  &#8226;   <a href="#argparse">argparse</a>
  &#8226;   <a href="#asyncio.base_events">asyncio.base_events</a>
  &#8226;   <a href="#asyncio.coroutines">asyncio.coroutines</a>
@@ -26788,8 +26801,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#libs.IO">libs.IO</a>
- &#8226;   <a href="#win32com">win32com</a>
+    <a href="#win32com">win32com</a>
  &#8226;   <a href="#win32com.client">win32com.client</a>
  &#8226;   <a href="#win32com.client.build">win32com.client.build</a>
  &#8226;   <a href="#win32com.client.dynamic">win32com.client.dynamic</a>
@@ -31033,7 +31045,6 @@ imported by:
  &#8226;   <a href="#_strptime">_strptime</a>
  &#8226;   <a href="#app.routes.api">app.routes.api</a>
  &#8226;   <a href="#app.routes.content">app.routes.content</a>
- &#8226;   <a href="#app.routes.rights">app.routes.rights</a>
  &#8226;   <a href="#app.routes.sign">app.routes.sign</a>
  &#8226;   <a href="#asyncio.base_events">asyncio.base_events</a>
  &#8226;   <a href="#asyncio.windows_events">asyncio.windows_events</a>
@@ -34622,8 +34633,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#libs.IO">libs.IO</a>
- &#8226;   <a href="#pyi_rth_win32comgenpy.py">pyi_rth_win32comgenpy.py</a>
+    <a href="#pyi_rth_win32comgenpy.py">pyi_rth_win32comgenpy.py</a>
  &#8226;   <a href="#win32com.client">win32com.client</a>
  &#8226;   <a href="#win32com.client.gencache">win32com.client.gencache</a>
  &#8226;   <a href="#win32com.client.genpy">win32com.client.genpy</a>
@@ -34662,8 +34672,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#libs.IO">libs.IO</a>
- &#8226;   <a href="#win32com.client">win32com.client</a>
+    <a href="#win32com.client">win32com.client</a>
  &#8226;   <a href="#win32com.client.CLSIDToClass">win32com.client.CLSIDToClass</a>
  &#8226;   <a href="#win32com.client.build">win32com.client.build</a>
  &#8226;   <a href="#win32com.client.dynamic">win32com.client.dynamic</a>
@@ -34773,8 +34782,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#libs.IO">libs.IO</a>
- &#8226;   <a href="#win32com.client">win32com.client</a>
+    <a href="#win32com.client">win32com.client</a>
  &#8226;   <a href="#win32com.client.makepy">win32com.client.makepy</a>
  &#8226;   <a href="#win32com.universal">win32com.universal</a>
 
