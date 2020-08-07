@@ -15,22 +15,22 @@ def add_route(bp, **f):
     @bp.route("/lamp/list", methods=["POST", "GET"])
     def lampList():
         params = Lamp(db, request, pops="id")
-        return json.dumps(params.findBy("exhibit"))
+        return json.dumps(params.findBy("exhibit", orderBy="order by type ASC,number ASC,id DESC"))
 
     @bp.route("/lamp/add", methods=["POST", "GET"])
     def lampAdd():
         params = Lamp(db, request, pops="id", byNames="exhibit")
-        return json.dumps(params.insert())
+        return json.dumps(params.insert(orderBy="order by type ASC,number ASC,id DESC"))
 
     @bp.route("/lamp/update", methods=["POST", "GET"])
     def lampUpdate():
         params = Lamp(db, request, pops="id", byNames="exhibit")
-        return json.dumps(params.updateById())
+        return json.dumps(params.updateById(orderBy="order by type ASC,number ASC,id DESC"))
 
     @bp.route("/lamp/del", methods=["POST", "GET"])
     def lampDelete():
         params = Lamp(db, request, pops="id", byNames="exhibit")
-        return json.dumps(params.deleteById())
+        return json.dumps(params.deleteById(orderBy="order by type ASC,number ASC,id DESC"))
 
     @bp.route("/host", methods=["POST", "GET"])
     def host():

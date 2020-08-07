@@ -9,21 +9,16 @@ function createDetailApp(contentId) {
                 var el = this, video = el.files[0], url = video ? URL.createObjectURL(video) : "";
                 $("[name='preVideo']", $(this).parents("form")).css("display", "block").attr('src', url); //获取文件本地路径 预览视频
             }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频：")
-            // updateForm.find("[name='path']").on("change", function (e) {
-            //     var el = this, video = el.files[0], url = URL.createObjectURL(video);
-            //     $("[name='preVideo']").css("display", "block").attr('src', url); //获取文件本地路径 预览视频
-            // }).attr("accept", "video/mp4").parents(".form-group").children("label").text("视频")
-        } else if (type == "image") {
-            $("[name='path']", [addForm[0], updateForm[0]]).off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片：")
-            // addForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
-            // updateForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
+        } else if (type == "image" || type == "welcome" || type == "cover") {
+            $("[name='path']", [addForm[0], updateForm[0]]).off("change").on("change", function (e) {
+                var el = this, img = el.files[0], url = img ? URL.createObjectURL(img) : "";
+                $("[name='preImage']", $(this).parents("form")).css("display", "block").attr('src', url); //获取文件本地路径 预览图片
+            }).attr("accept", "image/*").parents(".form-group").children("label").text("图片：")
         } else if (type == "caption") {
             $("[name='path']", [addForm[0], updateForm[0]]).off("change").on("change", function () {
                 var el = this, audio = el.files[0], url = audio ? URL.createObjectURL(audio) : "";
                 $("[name='preAudio']", $(this).parents("form")).css("display", "block").attr('src', url); //获取文件本地路径 预览音频
             }).attr("accept", "audio/mpeg").parents(".form-group").children("label").text("音频：")
-            // addForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
-            // updateForm.find("[name='path']").off("change").attr("accept", "image/*").parents(".form-group").children("label").text("图片")
         }
     }
     detail_tab.on("click", "li.nav-item", function (e) {
@@ -36,6 +31,10 @@ function createDetailApp(contentId) {
                 controllers[tab].clients = res.data
                 console.log("》》》》????", controllers[tab].clients)
                 grids[tab].jsGrid("loadData");
+                setTimeout(function () {
+                    // console.log("...延迟刷新200")
+                    grids[tab].jsGrid("refresh");
+                }, 200)
             })
         }
         setPath(tab)
@@ -161,11 +160,18 @@ function createDetailApp(contentId) {
                             var $el = $(this), type = $el.data("type")
                             if (type == "update") {
                                 updateForm[0].reset()
-                                var media = updateForm.find("[name='preVideo'],[name='preAudio']")
+                                var media = updateForm.find("[name='preVideo'],[name='preAudio'],[name='preImage']")
                                 media.css("display", "none").attr('src', '')
+                                preCover.eq(1).css("display", "none").attr("src", "")
                                 if (item.path) {
-                                    item.path.startsWith("video") && media.eq(0).css("display", "block").attr('src', $.url_for(item.path))
-                                    item.path.startsWith("voice") && media.eq(1).css("display", "block").attr('src', $.url_for(item.path))
+                                    item.path.startsWith("video") && media.eq(0).css("display", "block").attr('src', $.url_for(item.path));
+                                    item.path.startsWith("voice") && media.eq(1).css("display", "block").attr('src', $.url_for(item.path));
+                                    ["ppt", "pdf", "image"].filter(function (val) {
+                                        return item.path.startsWith(val)
+                                    }).length > 0 && media.eq(2).css("display", "block").attr('src', $.url_for(item.path))
+                                }
+                                if (item.cover && item.cover.startsWith("image")) {
+                                    preCover.eq(1).css("display", "block").attr("src", $.url_for(item.cover))
                                 }
                                 $("#update_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
                                 updateModalBtn.trigger("click")
@@ -233,10 +239,16 @@ function createDetailApp(contentId) {
 
     }
 
+    var preCover = $("[name='preCover']", [addForm[0], updateForm[0]]) //视频封面
+    $("[name='cover']", [addForm[0], updateForm[0]]).on("change", function () {
+        var el = this, img = el.files[0], url = img ? URL.createObjectURL(img) : "";
+        $("[name='preCover']", $(el).parents("form")).css("display", "block").attr("src", url)
+    })
     var $addBtn = $("#addBtn").on("click", function () {
         addForm[0].reset()
         $("#add_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
-        addForm.find("[name='preVideo'],[name='preAudio']").css("display", "none").attr('src', '')
+        addForm.find("[name='preVideo'],[name='preAudio'],[name='preImage']").css("display", "none").attr('src', '')
+        preCover.eq(0).css("display", "none").attr("src", "")
         addForm.find(".form-group").css("display", "none")
         for (var index in  cols[tab]) {
             var file = cols[tab][index], name = file.name

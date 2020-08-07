@@ -15,7 +15,7 @@ def add_route(bp, **f):
     def rightsTheme():
         params = Account(db, request, pops="id")
         print("params.theme", params.theme)
-        theme = json.dumps(params.theme.split(","))
+        theme = "all" if params.theme == "all" else json.dumps([] if not params.theme else params.theme.split(","))
         optRes = params.model.update({"theme": theme}, clause="where id={0}".format(params.id))
         optRes["data"] = theme
         return json.dumps(optRes)

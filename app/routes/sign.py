@@ -53,9 +53,10 @@ def add_route(bp, **f):
             account.number = 1
             account.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             # account.insert(author.__dict__)
-            theme = Theme(db, request)
-            optRes = theme.findBy()["data"]
-            account.theme = json.dumps([optRes[0]["id"]] if len(optRes) > 0 else [])
+            # theme = Theme(db, request)
+            # optRes = theme.findBy()["data"]
+            # account.theme = json.dumps([optRes[0]["id"]] if len(optRes) > 0 else [])
+            account.theme = "all"
             account.model.insert(dict(account))
 
             return redirect(url_for("sign.login"))

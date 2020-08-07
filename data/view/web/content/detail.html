@@ -184,10 +184,9 @@
                     </div>
                     <video controls="controls" name="preVideo"
                            style="display: none;width:100%;height:200px;margin-top: 16px;"></video>
-                    <audio id="audio-element" controls name="preAudio" src=""
-                           style="display: none;width:100%;height:50px;margin-top: 16px;">
-                        <!--<source src="" type="audio/mpeg"> -->
-                    </audio>
+                    <audio controls name="preAudio" src=""
+                           style="display: none;width:100%;height:50px;margin-top: 16px;"></audio>
+                    <img src="" name="preImage" alt="" style="display: none;width:100%;height:200px;margin-top: 16px">
                     <input type="hidden" name="time" value="0">
                 </div>
                 <div class="form-group row">
@@ -198,10 +197,8 @@
                             {#                            <label class="custom-file-label">{{ info.video if info.video else "选择视频" }}</label>#}
                             <label class="custom-file-label">{{ "选择封面" }}</label>
                         </div>
-                        {#                            <div class="input-group-append">#}
-                        {#                                <span class="input-group-text" >更新</span>#}
-                        {#                            </div>#}
                     </div>
+                    <img src="" name="preCover" alt="" style="display: none;width:100%;height:200px;margin-top: 16px">
                 </div>
                 <div class="form-group row">
                     <label class="col-sm-3 col-form-label">显示模式：</label>
@@ -527,8 +524,8 @@
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
-            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "path", type: "text", width: 80, align: "center", title: "路径", visible: false},
             {name: "cover", type: "text", width: 80, align: "center", title: "封面"},
             {name: "display_modal", type: "text", width: 80, align: "center", title: "显示模式"},
@@ -548,8 +545,8 @@
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
-            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "path", type: "text", width: 80, align: "center", title: "路径", visible: false},
             {name: "style", type: "text", width: 80, align: "center", title: "样式"}
         ]
@@ -558,8 +555,8 @@
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
-            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "url", type: "text", width: 120, align: "center", title: "地址"}
         ]
 
@@ -588,8 +585,8 @@
             {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
-            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
+            {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "path", type: "text", width: 80, align: "center", title: "路径", visible: false}
         ]
 

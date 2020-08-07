@@ -33,7 +33,7 @@ def add_route(bp, **f):
         user = session["user"]
         account = Account(db, request)
         res = account.model.find("*", clause="where id={0}".format(user["id"]))["data"]
-        if int(res[0]["rank"]) >= 800:
+        if int(res[0]["rank"]) >= 800 or res[0]["theme"] == "all":
             return json.dumps(params.findBy())
         else:
             resTheme = json.loads(res[0]["theme"])
@@ -41,7 +41,8 @@ def add_route(bp, **f):
             for idKey in resTheme:
                 ids.append("id={0}".format(int(idKey)))
             idsStr = " or ".join(ids)
-            optRes = params.model.find("*", clause="where {0}".format(idsStr))
+            optRes = {"data": [], "success": True} if not idsStr else params.model.find("*", clause="where {0}".format(
+                idsStr))
             return json.dumps(optRes)
         # res = params.model.find("*", clause="order by number ASC,id DESC")
         # return json.dumps(params.findBy())
@@ -120,9 +121,12 @@ def add_route(bp, **f):
         file = Movie(os.path.join("data", "statics"))
         path = file.up(request, "path", "video")
         params.path = "video/{0}".format(path)
+        params.size = 0
+        params.cover_size = 0
         if path:
             video = Video(db, request, pops="id")
             size = file.size(("video", path))
+            params.size = size
             video.model.insert(
                 {"number": 1, "name": params.name, "path": params.path, "label": 0, "time": video.param("time"),
                  "size": size})
@@ -132,6 +136,7 @@ def add_route(bp, **f):
         if cover:
             image = Image(db, request, pops="id")
             size = file.size(("image", cover))
+            params.cover_size = size
             image.model.insert({"number": 1, "name": params.name, "path": params.cover, "label": 0, "size": size})
 
         return json.dumps(params.insert())
@@ -145,20 +150,22 @@ def add_route(bp, **f):
             video = Video(db, request, pops="id")
             params.path = "video/{0}".format(path)
             size = file.size(("video", path))
+            params.size = size
             video.model.insert(
                 {"number": 1, "name": params.name, "path": params.path, "label": 0, "time": video.param("time"),
                  "size": size})
         else:
-            params.pops("path")
+            params.pops("path", "size")
 
         cover = file.up(request, "cover", "image")
         if cover:
             image = Image(db, request, pops="id")
             params.cover = "image/{0}".format(cover)
             size = file.size(("image", cover))
+            params.cover_size = size
             image.model.insert({"number": 1, "name": params.name, "path": params.cover, "label": 0, "size": size})
         else:
-            params.pops("cover")
+            params.pops("cover", "cover_size")
 
         return json.dumps(params.updateById())
 
@@ -171,13 +178,16 @@ def add_route(bp, **f):
     @bp.route("/image/list", methods=["POST", "GET"])
     def imageList():
         params = Content_image(db, request, pops="id")
-        return json.dumps(params.findBy(("theme", "content")))
+        return json.dumps(params.findBy(("theme", "content"), orderBy="order by number ASC,id ASC"))
 
     @bp.route("/image/add", methods=["POST", "GET"])
     def imageAdd():
         params = Content_image(db, request, pops="id", byNames=("theme", "content"))
         material = params.param("material")
+        name = params.get("name", "")
         pages = []
+        file = File(os.path.join("data", "statics"))
+
         if material:
             m = material.split("_")
             m_path = m[0]
@@ -185,21 +195,26 @@ def add_route(bp, **f):
             m_page = int(m[1])
             for i in range(m_page):
                 params.path = "{0}/{1}_{2}.png".format(m_path, name_png, i)
+                print("<>>>>>素材路径》》》", params.path)
+                params.size = file.size(params.path)
+                params.name = "{0}_{1}".format(name, i)
                 pages.append(dict(params))
 
-        file = File(os.path.join("data", "statics"))
         path = file.up(request, "path", "image")
         if path:
             image = Image(db, request, pops="id")
             params.path = "image/{0}".format(path)
+            params.name = name
             pages.append(dict(params))
             size = file.size(("image", path))
+            params.size = size
             image.model.insert({"number": 1, "name": params.name, "path": params.path, "label": 0, "size": size})
         # optRes = params.model.insert(dict(params))
         if len(pages) == 0:
             params.path = "image/"
+            params.size = 0
             pages.append(dict(params))
-        return json.dumps(params.insert(pages))
+        return json.dumps(params.insert(pages, orderBy="order by number ASC,id ASC"))
 
     @bp.route("/image/update", methods=["POST", "GET"])
     def imageUpdate():
@@ -210,15 +225,16 @@ def add_route(bp, **f):
             image = Image(db, request, pops="id")
             params.path = "image/{0}".format(path)
             size = file.size(("image", path))
+            params.size = size
             image.model.insert({"number": 1, "name": params.name, "path": params.path, "label": 0, "size": size})
         else:
-            params.pops("path")
-        return json.dumps(params.updateById())
+            params.pops("path", "size")
+        return json.dumps(params.updateById(orderBy="order by number ASC,id ASC"))
 
     @bp.route("/image/del", methods=["POST", "GET"])
     def imageDelete():
         params = Content_image(db, request, pops="id", byNames=("theme", "content"))
-        return json.dumps(params.deleteById())
+        return json.dumps(params.deleteById(orderBy="order by number ASC,id ASC"))
 
     # >>>网页
     @bp.route("/web/list", methods=["POST", "GET"])
@@ -253,9 +269,11 @@ def add_route(bp, **f):
         file = File(os.path.join("data", "statics"))
         path = file.up(request, "path", "image")
         params.path = "image/{0}".format(path)
+        params.size = 0
         if path:
             image = Image(db, request, pops="id")
             size = file.size(("image", path))
+            params.size = size
             name = params.get("name", "")
             image.model.insert({"number": 1, "name": name, "path": params.path, "label": 0, "size": size})
         return json.dumps(params.insert())
@@ -269,10 +287,11 @@ def add_route(bp, **f):
             image = Image(db, request, pops="id")
             params.path = "image/{0}".format(path)
             size = file.size(("image", path))
+            params.size = size
             name = params.get("name", "")
             image.model.insert({"number": 1, "name": name, "path": params.path, "label": 0, "size": size})
         else:
-            params.pops("path")
+            params.pops("path", "size")
         return json.dumps(params.updateById())
 
     @bp.route("/welcome/del", methods=["POST", "GET"])
@@ -284,13 +303,16 @@ def add_route(bp, **f):
     @bp.route("/cover/list", methods=["POST", "GET"])
     def coverList():
         params = Content_cover(db, request, pops="id")
-        return json.dumps(params.findBy(("theme", "content")))
+        return json.dumps(params.findBy(("theme", "content"), orderBy="order by number ASC,id ASC"))
 
     @bp.route("/cover/add", methods=["POST", "GET"])
     def coverAdd():
         params = Content_cover(db, request, pops="id", byNames=("theme", "content"))
         material = params.param("material")
+        name = params.get("name", "")
         pages = []
+        file = File(os.path.join("data", "statics"))
+
         if material:
             m = material.split("_")
             m_path = m[0]
@@ -298,22 +320,25 @@ def add_route(bp, **f):
             m_page = int(m[1])
             for i in range(m_page):
                 params.path = "{0}/{1}_{2}.png".format(m_path, name_png, i)
+                params.size = file.size(params.path)
+                params.name = "{0}_{1}".format(name, i)
                 pages.append(dict(params))
 
-        file = File(os.path.join("data", "statics"))
         path = file.up(request, "path", "image")
         if path:
             image = Image(db, request, pops="id")
             params.path = "image/{0}".format(path)
-            pages.append(dict(params))
+            params.name = name
             size = file.size(("image", path))
-            name = params.get("name", "")
+            params.size = size
+            pages.append(dict(params))
             image.model.insert({"number": 1, "name": name, "path": params.path, "label": 0, "size": size})
 
         if len(pages) == 0:
             params.path = "image/"
+            params.size = 0
             pages.append(dict(params))
-        return json.dumps(params.insert(pages))
+        return json.dumps(params.insert(pages, orderBy="order by number ASC,id ASC"))
 
     @bp.route("/cover/update", methods=["POST", "GET"])
     def coverUpdate():
@@ -324,16 +349,17 @@ def add_route(bp, **f):
             image = Image(db, request, pops="id")
             params.path = "image/{0}".format(path)
             size = file.size(("image", path))
+            params.size = size
             name = params.get("name", "")
             image.model.insert({"number": 1, "name": name, "path": params.path, "label": 0, "size": size})
         else:
-            params.pops("path")
-        return json.dumps(params.updateById())
+            params.pops("path", "size")
+        return json.dumps(params.updateById(orderBy="order by number ASC,id ASC"))
 
     @bp.route("/cover/del", methods=["POST", "GET"])
     def coverDelete():
         params = Content_cover(db, request, pops="id", byNames=("theme", "content"))
-        return json.dumps(params.deleteById())
+        return json.dumps(params.deleteById(orderBy="order by number ASC,id ASC"))
 
     # >>>屏保
     @bp.route("/saver/list", methods=["POST", "GET"])
@@ -348,10 +374,12 @@ def add_route(bp, **f):
         file = File(os.path.join("data", "statics"))
         path = file.up(request, "path", type)
         params.path = "{0}/{1}".format(type, path)
+        params.size = 0
         if path:
             model = Image if type == "image" else Video
             model_db = model(db, request, pops="id")
             size = file.size((type, path))
+            params.size = size
             name = params.get("name", "")
             data = {"number": 1, "name": name, "path": params.path, "label": 0, "size": size}
             if type == "video":
@@ -370,13 +398,14 @@ def add_route(bp, **f):
             model_db = model(db, request, pops="id")
             params.path = "{0}/{1}".format(type, path)
             size = file.size((type, path))
+            params.size = size
             name = params.get("name", "")
             data = {"number": 1, "name": name, "path": params.path, "label": 0, "size": size}
             if type == "video":
                 data["time"] = model_db.param("time")
             model_db.model.insert(data)
         else:
-            params.pops("path")
+            params.pops("path", "size")
         return json.dumps(params.updateById())
 
     @bp.route("/saver/del", methods=["POST", "GET"])
@@ -396,9 +425,11 @@ def add_route(bp, **f):
         file = File(os.path.join("data", "statics"))
         path = file.up(request, "path", "voice")
         params.path = "voice/{0}".format(path)
+        params.size = 0
         if path:
             voice = Voice(db, request, pops="id")
             size = file.size(("voice", path))
+            params.size = size
             name = params.get("name", "")
             voice.model.insert(
                 {"number": 1, "name": name, "path": params.path, "label": 0, "time": voice.param("time"), "size": size})
@@ -413,11 +444,12 @@ def add_route(bp, **f):
             voice = Voice(db, request, pops="id")
             params.path = "voice/{0}".format(path)
             size = file.size(("voice", path))
+            params.size = size
             name = params.get("name", "")
             voice.model.insert(
                 {"number": 1, "name": name, "path": params.path, "label": 0, "time": voice.param("time"), "size": size})
         else:
-            params.pops("path")
+            params.pops("path", "size")
         return json.dumps(params.updateById())
 
     @bp.route("/caption/del", methods=["POST", "GET"])

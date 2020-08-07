@@ -141,7 +141,7 @@ function createDevApp(columns, url) {
                             delModalBtn.trigger("click")
                             delForm.find("[name='id']").val(item.id)
                             delForm.find("[name='exhibit']").val(item.exhibit)
-                        }else if (type == "theme") {
+                        } else if (type == "theme") {
                             var row = controller.clients.indexOf(item)
                             linksOpt.attr("row", row)
                             linkForm[0].reset()
@@ -149,11 +149,21 @@ function createDevApp(columns, url) {
                             // linkForm.find("[name='exhibit']").val(item.exhibit)
                             var show = {display: "inline-block"}, hidden = {display: "none"}
                             // linkForm.find("#checkbox_" + item.id).css(hidden).siblings().css(hidden).parents(".icheck-primary.d-inline").css(hidden).siblings().css(show).children().css(show)
-                            var links = JSON.parse(item.theme)
-                            for (var i in links) {
-                                var linkId = links[i]
-                                linkForm.find("#checkbox_" + linkId).prop("checked", true)
+                            if (item.theme == "all") {
+                                linkForm.find("[id^='checkbox_']").prop("checked", true)
+                            } else {
+                                var links = []
+                                try {
+                                    links = JSON.parse(item.theme)
+                                } catch (e) {
+                                    console.log("item.theme不是JSON格式！")
+                                }
+                                for (var i in links) {
+                                    var linkId = links[i]
+                                    linkForm.find("#checkbox_" + linkId).prop("checked", true)
+                                }
                             }
+
                             linkModalBtn.trigger("click")
                         }
 
@@ -233,10 +243,11 @@ function createDevApp(columns, url) {
         linkForm.find("input[type='checkbox']:not(:checked)").each(function () {
             nocheck_list.push($(this).val())
         })
+        var theme = nocheck_list.length > 0 ? check_list.join(",") : "all"
         console.log(check_list.join(","))
         $.request({
             url: url.theme,
-            data: {"theme": check_list.join(","), "id": linkForm.find("[name='id']").val()},
+            data: {"theme": theme, "id": linkForm.find("[name='id']").val()},
             type: "post",
             tip: true
         }, function (res) {

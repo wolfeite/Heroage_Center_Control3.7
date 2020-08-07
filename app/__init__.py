@@ -41,7 +41,8 @@ def config_db(app):
     })
     accountRes = account.find("*", clause="where name='heroAge'")
     if len(accountRes["data"]) == 0:
-        account.insert({"name": "heroAge", "password": Account.md5("123456"), "nickname": "Hero", "rank": 1000})
+        account.insert(
+            {"name": "heroAge", "password": Account.md5("123456"), "nickname": "Hero", "rank": 1000, "theme": "all"})
 
     # >>>>set 系统设置
     # 展区管理
@@ -248,7 +249,9 @@ def config_db(app):
         "height": "int",  # 源视频高
         "action_start": "text",  # 开始播放动作
         "action_end": "text",  # 结束播放动作
-        "time": "text"  # 视频时长
+        "time": "text",  # 视频时长
+        "size": "text",  # 视频大小
+        "cover_size": "text"  # 视频封面大小
     })
     # 内容详情-图片
     content_image = db.model("content_image", {
@@ -258,7 +261,8 @@ def config_db(app):
         "number": "integer default 1",  # 图片序号
         "name": "text not null",  # 图片名称
         "path": "text",  # 图片真实所在路径
-        "style": "text"  # 图片展示样式
+        "style": "text",  # 图片展示样式
+        "size": "text"  # 图片大小
     })
     # 内容详情-网页
     content_web = db.model("content_web", {
@@ -287,7 +291,8 @@ def config_db(app):
         "sub_font": "text",  # 副标题字体大小
         "sub_offset_x": "int",  # 副标题X偏移
         "sub_offset_y": "int",  # 副标题Y偏移
-        "sub_align": "text"  # 副标题对齐方式0center,1right,2left
+        "sub_align": "text",  # 副标题对齐方式0center,1right,2left
+        "size": "text"  # 背景图大小
     })
     # 内容详情-封面
     content_cover = db.model("content_cover", {
@@ -296,7 +301,8 @@ def config_db(app):
         "theme": "int not null references theme(id) on delete cascade",  # 主题外键
         "number": "integer default 1",  # 封面序号
         "name": "text not null",  # 封面名称
-        "path": "text"  # 封面所在路径
+        "path": "text",  # 封面所在路径
+        "size": "text"  # 封面图片大小
     })
     # 内容详情-屏保
     content_saver = db.model("content_saver", {
@@ -305,7 +311,8 @@ def config_db(app):
         "theme": "int not null references theme(id) on delete cascade",  # 主题外键
         "number": "integer default 1",  # 屏保序号
         "type": "number",  # 屏保类型 image | video
-        "path": "text"  # 屏保文件所在路径
+        "path": "text",  # 屏保文件所在路径
+        "size": "text"  # 屏保大小
     })
     # 内容详情-解说词
     content_caption = db.model("content_caption", {
@@ -314,7 +321,8 @@ def config_db(app):
         "theme": "int not null references theme(id) on delete cascade",  # 主题外键
         "number": "integer default 1",  # 解说词序号
         "text": "text not null",  # 解说词文字
-        "path": "text"  # 解说词声音文件所在路径
+        "path": "text",  # 解说词声音文件所在路径
+        "size": "text"  # 音频大小
     })
 
 def config_app(app):

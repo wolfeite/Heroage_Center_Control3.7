@@ -5,6 +5,7 @@ import requests
 from libs.IO import File
 import ast
 from app.models.Account import Account
+from app.models.Set import Theme
 
 class Dev:
     def __init__(self):
@@ -38,8 +39,24 @@ def add_route(bp, **f):
         # account = db.models["account"]
         clause = "where name='{0}' and password='{1}'".format(account.name, account.password)
         res = account.model.find("*", clause=clause)
-        if len(res["data"]) > 0:
-            res["data"][0].pop("password")
+        resData = res["data"]
+        if len(resData) > 0:
+            user = resData[0]
+            user.pop("password")
+            resTheme = "all" if user["theme"] == "all" else json.loads(user["theme"])
+            params = Theme(db, request, pops="id")
+            orderBy = "order by number ASC,id DESC"
+            clauseT = orderBy
+            # res["data"][0]["theme"] = json.loads(theme)
+
+            if int(user["rank"]) < 800 and not resTheme == "all":
+                ids = []
+                for idKey in resTheme:
+                    ids.append("id={0}".format(int(idKey)))
+                idsStr = "id is NULL" if len(ids) == 0 else " or ".join(ids)
+                clauseT = "where {0} {1}".format(idsStr, orderBy)
+            optRes = params.model.find("*", clause=clauseT)["data"]
+            res["data"][0]["theme"] = optRes
         else:
             res["msg"] = "账号或密码错误"
             res["success"] = False
@@ -67,7 +84,13 @@ def add_route(bp, **f):
     @bp.route("/vary/<path:content_id>", methods=["POST", "GET"])
     def varyVersion(content_id):
         version = db.models["content"]
-        res = version.find("*", clause="where id={0}".format(content_id))
+        context = content_id
+        clause = "where id={0}".format(content_id)
+        if context.startswith("tag_"):
+            context = context.split("_")[1]
+            clause = "where tag='{0}'".format(context)
+            print(">>>>", context, clause)
+        res = version.find("*", clause=clause)
         print(">>>内容版本：", res)
         return json.dumps(res)
 

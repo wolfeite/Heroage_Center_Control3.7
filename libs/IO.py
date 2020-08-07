@@ -51,12 +51,12 @@ class File():
     def dir(self):
         return self.path.dir
 
-    def size(self, fileName):
+    def size(self, fileName, byte=True):
         file = fileName
         if isinstance(file, (list, tuple)):
             file = self.path.join(*fileName)
         file_byte = os.path.getsize(self.path.join(self.dir, file))
-        return self.sizeConvert(file_byte)
+        return file_byte if byte else self.sizeConvert(file_byte)
 
     @classmethod
     def sizeConvert(cls, size):  # 单位换算
