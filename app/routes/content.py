@@ -205,9 +205,9 @@ def add_route(bp, **f):
             image = Image(db, request, pops="id")
             params.path = "image/{0}".format(path)
             params.name = name
-            pages.append(dict(params))
             size = file.size(("image", path))
             params.size = size
+            pages.append(dict(params))
             image.model.insert({"number": 1, "name": params.name, "path": params.path, "label": 0, "size": size})
         # optRes = params.model.insert(dict(params))
         if len(pages) == 0:

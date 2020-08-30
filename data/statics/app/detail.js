@@ -78,6 +78,9 @@ function createDetailApp(contentId) {
     var updateOptClose = $("#updateOptClose")
     var updateModalBtn = $("#updateModalBtn")
 
+    updateOpt.before('<button type="button" class="btn btn-default" id="adjustOpt">调试</button>')
+    var adjustOpt = $("#adjustOpt")
+
     $("[name='preVideo'],[name='preAudio']", [addForm[0], updateForm[0]]).on("canplaythrough canplay", function (e) {
         var el = this, time = el.duration;
         var hour = parseInt(time / 3600);
@@ -176,6 +179,10 @@ function createDetailApp(contentId) {
                                 $("#update_labelBtn").attr({lid: "", name: "选择标签"}).find("span").text("选择标签")
                                 updateModalBtn.trigger("click")
                                 updateForm.find(".form-group").css("display", "none")
+                                adjustOpt.css("display", "none")
+                                if (tab == "video" || tab == "welcome") {
+                                    adjustOpt.css("display", "block")
+                                }
                                 for (var i in cols[tab]) {
                                     var name = cols[tab][i].name
                                     var $el = updateForm.find("[name='" + name + "']")
@@ -299,6 +306,18 @@ function createDetailApp(contentId) {
             console.log("》》》》????", controllers[tab].clients)
             grids[tab].jsGrid("loadData");
             updateOptClose.trigger("click")
+        })
+    })
+    //调试
+    adjustOpt.on("click", function (e) {
+        var params = new FormData(updateForm.get(0));
+        //$.request({url: urls[tab].update, data: params, type: "post", tip: true}, function (res) {
+        $.request({
+            url: urls[tab].update, data: params, type: "post", tip: true, contentType: false, processData: false
+        }, function (res) {
+            controllers[tab].clients = res.data
+            console.log("》》》》????调试：", controllers[tab].clients)
+            grids[tab].jsGrid("loadData");
         })
     })
     //删除

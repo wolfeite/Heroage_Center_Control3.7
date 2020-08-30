@@ -201,12 +201,6 @@
                     <img src="" name="preCover" alt="" style="display: none;width:100%;height:200px;margin-top: 16px">
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">显示模式：</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="0全屏，1自定义" value="" name="display_modal">
-                    </div>
-                </div>
-                <div class="form-group row">
                     <label class="col-sm-3 col-form-label">播放模式：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="0回到封面，1单循环，2顺序播放，3停止" value=""
@@ -214,27 +208,21 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">屏宽：</label>
+                    <label class="col-sm-3 col-form-label">显示模式：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="0全屏，1自定义" value="" name="display_modal">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">视频宽：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="请输入" value="" name="width">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">屏高：</label>
+                    <label class="col-sm-3 col-form-label">视频高：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="请输入" value="" name="height">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">播放动作：</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="action_start">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">结束动作：</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" placeholder="请输入" value="" name="action_end">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -337,6 +325,18 @@
                     <label class="col-sm-3 col-form-label">缩放Y：</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" placeholder="请输入" value="" name="zoom_y">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">播放动作：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="action_start">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">结束动作：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="请输入" value="" name="action_end">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -521,15 +521,15 @@
         }
 
         var video_columns = [
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
             {name: "name", type: "text", width: 160, align: "center", title: "名称"},
             {name: "path", type: "text", width: 80, align: "center", title: "路径", visible: false},
-            {name: "cover", type: "text", width: 80, align: "center", title: "封面"},
+            {name: "cover", type: "text", width: 80, align: "center", title: "封面", visible: false},
             {name: "display_modal", type: "text", width: 80, align: "center", title: "显示模式"},
-            {name: "play_modal", type: "text", width: 80, align: "center", title: "播放模式", visible: false},
+            {name: "play_modal", type: "text", width: 80, align: "center", title: "播放模式"},
             {name: "offset_x", type: "number", width: 50, align: "center", title: "偏移X", visible: false},
             {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
             {name: "zoom_x", type: "number", width: 50, align: "center", title: "缩放X", visible: false},
@@ -541,8 +541,8 @@
         ]
 
         var image_columns = [
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "material", type: "text", width: 30, align: "left", title: "素材", visible: false},
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
@@ -552,7 +552,7 @@
         ]
 
         var web_columns = [
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
@@ -561,7 +561,7 @@
         ]
 
         var welcome_columns = [
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
@@ -581,8 +581,8 @@
         ]
 
         var cover_columns = [
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "material", type: "text", width: 30, align: "left", title: "素材", visible: false},
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
@@ -591,7 +591,7 @@
         ]
 
         var saver_columns = [
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
@@ -600,7 +600,7 @@
         ]
 
         var caption_columns = [
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "id", type: "number", width: 30, align: "left", title: "ID"},
             {name: "theme", type: "number", width: 30, align: "left", title: "主题", visible: false},
             {name: "content", type: "number", width: 30, align: "left", title: "内容", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},

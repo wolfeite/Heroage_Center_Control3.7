@@ -15,7 +15,8 @@ class Path():
         pathArr = os.path.abspath(sys.argv[0]).split(self.sep)
         self.enter = pathArr.pop()
         self.root = self.sep.join(pathArr)
-        print("Path对象路径分析：入口文件{0}，项目根路径{1}".format(self.enter, self.root))
+        self.frozen = getattr(sys, "frozen", False)
+        print("Path对象路径分析：入口文件{0}，项目根路径{1}".format(self.enter, self.root, self.frozen))
 
     def __getitem__(self, item):
         '''内置方法, 当使用obj['name']的形式的时候, 将调用这个方法, 这里返回的结果就是值'''

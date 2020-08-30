@@ -114,7 +114,7 @@ def add_route(bp, **f):
         paths = ["data"]
         if type == "db":
             paths.append(type)
-        elif type in ["video", "image"]:
+        elif type in ["video", "image", "voice"]:
             paths.extend(["statics", type])
         elif type in ["ppt", "pdf"]:
             names = filename.split("/")
@@ -183,7 +183,10 @@ def add_route(bp, **f):
         exhibit = db.models["exhibit"]
         res["data"]["exhibit"] = exhibit.find("*", clause=orderBy)["data"]
         content = db.models["content"]
-        res["data"]["content"] = content.find("*", clause=orderBy)["data"]
+        optRes = content.find("*", clause=orderBy)["data"]
+        for i in range(len(optRes)):
+            optRes[i]["links"] = json.loads(optRes[i]["links"])
+        res["data"]["content"] = optRes
         print("获取到的内容》》", res)
         return json.dumps(res)
 
@@ -204,6 +207,14 @@ def add_route(bp, **f):
             res["data"][key] = table.find("*", clause=useBy)["data"]
 
         return json.dumps(res)
+
+    # 内容详情调试
+    @bp.route("/adjust/<path:type>/<path:id>", methods=["POST", "GET"])
+    def contentDetail_adjust(type, id):
+        tableName = "content_{0}".format(type)
+        table = db.models[tableName]
+        res = table.find("*", clause="where id={0}".format(id))["data"]
+        return json.dumps(res[0] if len(res) > 0 else {})
 
     @bp.route("/other", methods=["POST", "GET"])
     def other():
