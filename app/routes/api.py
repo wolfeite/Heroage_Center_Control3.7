@@ -48,13 +48,19 @@ def add_route(bp, **f):
             orderBy = "order by number ASC,id DESC"
             clauseT = orderBy
             # res["data"][0]["theme"] = json.loads(theme)
+            pat = request.app["pattern"]
+            if pat == 1:
+                clauseT = "where id=0 {0}".format(orderBy)
+            elif pat == 0:
+                if int(user["rank"]) >= 800 or resTheme == "all":
+                    clauseT = "where id>0 {0}".format(orderBy)
+                else:
+                    ids = []
+                    for idKey in resTheme:
+                        ids.append("id={0}".format(int(idKey)))
+                    idsStr = "id is NULL" if len(ids) == 0 else " or ".join(ids)
+                    clauseT = "where {0} {1}".format(idsStr, orderBy)
 
-            if int(user["rank"]) < 800 and not resTheme == "all":
-                ids = []
-                for idKey in resTheme:
-                    ids.append("id={0}".format(int(idKey)))
-                idsStr = "id is NULL" if len(ids) == 0 else " or ".join(ids)
-                clauseT = "where {0} {1}".format(idsStr, orderBy)
             optRes = params.model.find("*", clause=clauseT)["data"]
             res["data"][0]["theme"] = optRes
         else:
@@ -63,10 +69,12 @@ def add_route(bp, **f):
         return json.dumps(res)
 
     # 版本更新
-    @bp.route("/update", methods=["POST", "GET"])
-    def updated():
+    @bp.route("/update/<path:pat>", methods=["POST", "GET"])
+    def updated(pat):
         version = db.models["version"]
-        res = version.update({"time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}, clause="where number=3.7")
+        strTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        pat = None if pat == None else int(pat)
+        res = version.update({"time": strTime, "pattern": pat}, clause="where number=3.7")
         print(">>>数据库更新结果：", res)
         # return render("web/dev.html", type={}, dev={})
         return json.dumps(res)
@@ -184,8 +192,10 @@ def add_route(bp, **f):
         res["data"]["exhibit"] = exhibit.find("*", clause=orderBy)["data"]
         content = db.models["content"]
         optRes = content.find("*", clause=orderBy)["data"]
+        pat = request.app["pattern"]
         for i in range(len(optRes)):
             optRes[i]["links"] = json.loads(optRes[i]["links"])
+            optRes[i]["themes"] = optRes[i]["themes"] if pat == 0 else 0
         res["data"]["content"] = optRes
         print("获取到的内容》》", res)
         return json.dumps(res)
@@ -199,11 +209,23 @@ def add_route(bp, **f):
             "data": {"theme": {}, "content_video": {}, "content_image": {}, "content_web": {}, "content_welcome": {},
                      "content_cover": {}, "content_saver": {}, "content_caption": {}}
         }
+        pat = request.app["pattern"]
         orderBy = "order by number ASC,id DESC"
         caluse = "where content={0} {1}".format(content_id, orderBy)
+        themeCaluse = "where {0} {1}".format("id=0", orderBy)
+        if pat == 0:
+            content = db.models["content"]
+            optRes = content.find("*", clause="where id={0}".format(content_id))["data"]
+            themes = optRes[0]["themes"].split(",") if len(optRes) > 0 else []
+            ids = []
+            for themeId in themes:
+                ids.append("id={0}".format(int(themeId)))
+            idsStr = "id is NULL" if len(ids) == 0 else " or ".join(ids)
+            themeCaluse = "where {0} {1}".format(idsStr, orderBy)
+
         for key in res["data"]:
             table = db.models[key]
-            useBy = orderBy if key == "theme" else caluse
+            useBy = themeCaluse if key == "theme" else caluse
             res["data"][key] = table.find("*", clause=useBy)["data"]
 
         return json.dumps(res)

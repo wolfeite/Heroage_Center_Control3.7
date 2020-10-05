@@ -26,7 +26,7 @@
             width: 150px;
         }
 
-        #linksModal [class*=icheck-] > label {
+        #linksModal [class*=icheck-] > label, #patternModal [class*=icheck-] > label {
             margin-bottom: 8px;
             width: 155px;
             white-space: nowrap;
@@ -81,7 +81,7 @@
     </section>
     <!-- /.content -->
 
-    {% from "templates/operateModal.html" import addModal,updateModal,delModal,linksModal %}
+    {% from "templates/operateModal.html" import addModal,updateModal,delModal,linksModal,patternModal %}
     {% macro formModal(prefix="_") %}
         <form role="form" action="#" enctype="multipart/form-data" method="post">
             <input type="hidden" name="id" value=""/>
@@ -228,6 +228,21 @@
             </div>
         </form>
     {% endcall %}
+    {% call patternModal() %}
+        <p>选择需要的主题，最少一个</p>
+        <form role="form" action="#" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="id" value=""/>
+            <input type="hidden" name="exhibit" value=""/>
+            <div class="form-group clearfix">
+                <!-- /.card
+               <div class="icheck-primary d-inline">
+                   <input type="checkbox" id="checkboxPrimary3" disabled>
+                   <label for="checkboxPrimary3">预留</label>
+               </div>
+               -->
+            </div>
+        </form>
+    {% endcall %}
 {% endblock %}
 {% block js %}
     <!-- jsGrid -->
@@ -243,15 +258,16 @@
             add: "/content/add",
             update: "/content/update",
             del: "/content/del",
-            links: "/content/links"
+            links: "/content/links",
+            themes:"/content/setThemes"
         }
 
         var columns = [
-            {name: "id", type: "number", width: 30, align: "left", title: "ID", visible: false},
+            {name: "id", type: "number", width: 15, align: "left", title: "ID", visible: false},
             {name: "exhibit", type: "number", width: 30, align: "left", title: "展厅", visible: false},
             {name: "number", type: "number", width: 50, align: "center", title: "序号"},
             {name: "name", type: "text", width: 50, align: "center", title: "名称"},
-            {name: "tag", type: "text", width: 80, align: "center", title: "标识"},
+            {name: "tag", type: "text", width: 30, align: "center", title: "标识"},
             {name: "ip", type: "text", width: 80, align: "center", title: "IP"},
             {name: "width", type: "number", width: 50, align: "center", title: "屏宽", visible: false},
             {name: "height", type: "number", width: 50, align: "center", title: "屏高", visible: false},
@@ -265,7 +281,7 @@
             },
             {name: "cover_play", type: "text", width: 80, align: "center", title: "封面播放模式", visible: false},
             {
-                name: "display", type: "text", width: 50, align: "center", title: "显示",
+                name: "display", type: "text", width: 30, align: "center", title: "显示",
                 itemTemplate: function (value, item) {
                     return value == 0 ? "否" : "是"
                 }
@@ -275,6 +291,7 @@
             {name: "offset_y", type: "number", width: 50, align: "center", title: "偏移Y", visible: false},
             {name: "scale", type: "number", width: 50, align: "center", title: "缩放", visible: false},
             {name: "links", type: "text", width: 50, align: "center", title: "关联", visible: false},
+            {name: "themes", type: "text", width: 50, align: "center", title: "主题", visible: false},
             {name: "content_type", type: "text", width: 50, align: "center", title: "第三方控制", visible: false},
             {name: "time", type: "text", width: 80, align: "center", title: "同步时间"},
         ]

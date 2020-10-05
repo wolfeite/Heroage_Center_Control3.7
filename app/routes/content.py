@@ -25,16 +25,52 @@ def add_route(bp, **f):
     def contentExhibit():
         params = Exhibit(db, request, pops="id")
         # res = params.model.find("*", clause="order by number ASC,id DESC")
-        return json.dumps(params.findBy())
+        pat = request.app["pattern"]
+        strOrder = "where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0")
+        return json.dumps(params.findBy(orderBy=strOrder))
 
     @bp.route("/theme", methods=["POST", "GET"])
     def contentTheme():
         params = Theme(db, request, pops="id")
+        pat = request.app["pattern"]
+
+        if pat == 1:
+            return json.dumps(params.findBy(orderBy="where id=0 order by number ASC,id DESC"))
+        elif pat == 0:
+            user = session["user"]
+            account = Account(db, request)
+            res = account.model.find("*", clause="where id={0}".format(user["id"]))["data"]
+            themeVal = res[0]["theme"]
+            hasTheme = "all" if themeVal == "all" else json.loads(themeVal)
+
+            content = Content(db, request)
+            res = content.findBy("id")["data"]
+            print("屏幕为：", res, "该用户有权限的主题：", hasTheme)
+            resTheme = res[0]["themes"]
+            resTheme = [] if resTheme == "" or resTheme == None else resTheme.split(",")
+            ids = []
+            for idKey in resTheme:
+                (hasTheme == "all" or str(idKey) in hasTheme) and ids.append("id={0}".format(int(idKey)))
+            idsStr = " or ".join(ids)
+            optRes = {"data": [], "success": True} if not idsStr else params.model.find("*", clause="where {0}".format(
+                idsStr))
+            return json.dumps(optRes)
+        else:
+            return json.dumps({"data": [], "success": True})
+
+    @bp.route("/themeList", methods=["POST", "GET"])
+    def themeList():
+        params = Theme(db, request, pops="id")
+        pat = request.app["pattern"]
         user = session["user"]
         account = Account(db, request)
         res = account.model.find("*", clause="where id={0}".format(user["id"]))["data"]
+
+        if not pat == 0:
+            return json.dumps(params.findBy(orderBy="where id=0 order by number ASC,id DESC"))
+
         if int(res[0]["rank"]) >= 800 or res[0]["theme"] == "all":
-            return json.dumps(params.findBy())
+            return json.dumps(params.findBy(orderBy="where id>0 order by number ASC,id DESC"))
         else:
             resTheme = json.loads(res[0]["theme"])
             ids = []
@@ -46,6 +82,16 @@ def add_route(bp, **f):
             return json.dumps(optRes)
         # res = params.model.find("*", clause="order by number ASC,id DESC")
         # return json.dumps(params.findBy())
+
+    @bp.route("/setThemes", methods=["POST", "GET"])
+    def setThemes():
+        params = Content(db, request, pops="id")
+        updateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        print("params.themes:", params.themes)
+        themes = params.themes
+        optRes = params.model.update({"time": updateTime, "themes": themes}, clause="where id={0}".format(params.id))
+        optRes["data"] = themes
+        return json.dumps(optRes)
 
     @bp.route("/links", methods=["POST", "GET"])
     def contentLinks():
@@ -61,7 +107,9 @@ def add_route(bp, **f):
     def contentList():
         params = Content(db, request, pops="id")
         res = params.findBy("exhibit")
-        links = params.model.find("id,name,exhibit")
+        pat = request.app["pattern"]
+        strOrder = "where {0} order by number ASC,id DESC".format("exhibit>0" if pat == 0 else "exhibit=0")
+        links = params.model.find("id,name,exhibit", clause=strOrder)
         res["links"] = links["data"]
         print("res:>>", res)
         # return json.dumps(res, default=lambda o: o.__dict__)
@@ -70,22 +118,28 @@ def add_route(bp, **f):
     @bp.route("/add", methods=["POST", "GET"])
     def contentAdd():
         params = Content(db, request, pops=("id", "links", "time"), byNames="exhibit")
+        pat = request.app["pattern"]
+        strOrder = "where {0} order by number ASC,id DESC".format("exhibit>0" if pat == 0 else "exhibit=0")
         res = params.insert()
-        links = params.model.find("id,name,exhibit")
+        links = params.model.find("id,name,exhibit", clause=strOrder)
         res["links"] = links["data"]
         return json.dumps(res)
 
     @bp.route("/update", methods=["POST", "GET"])
     def contentUpdate():
         params = Content(db, request, pops=("id", "links"), byNames="exhibit")
+        pat = request.app["pattern"]
+        strOrder = "where {0} order by number ASC,id DESC".format("exhibit>0" if pat == 0 else "exhibit=0")
         params.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        return json.dumps(params.updateById())
+        return json.dumps(params.updateById(orderBy=strOrder))
 
     @bp.route("/del", methods=["POST", "GET"])
     def contentDelete():
         params = Content(db, request, pops="id", byNames="exhibit")
         res = params.deleteById(foreign_keys=True)
-        links = params.model.find("id,name,exhibit")
+        pat = request.app["pattern"]
+        strOrder = "where {0} order by number ASC,id DESC".format("exhibit>0" if pat == 0 else "exhibit=0")
+        links = params.model.find("id,name,exhibit", clause=strOrder)
         res["links"] = links["data"]
         if res["success"]:
             # 删除与其相关联的links内容

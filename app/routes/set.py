@@ -12,24 +12,33 @@ def add_route(bp, **f):
     @bp.route("/exhibit/list", methods=["POST", "GET"])
     def exhibitList():
         params = Exhibit(db, request, pops="id")
-        res = params.model.find("*", clause="order by number ASC,id DESC")
+        pat = request.app["pattern"]
+        res = params.model.find("*",
+                                clause="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0"))
         # return json.dumps(res, default=lambda o: o.__dict__)
         return json.dumps(res)
 
     @bp.route("/exhibit/add", methods=["POST", "GET"])
     def exhibitAdd():
         params = Exhibit(db, request, pops="id")
-        return json.dumps(params.insert())
+        pat = request.app["pattern"]
+        return json.dumps(
+            params.insert(orderBy="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0")))
 
     @bp.route("/exhibit/update", methods=["POST", "GET"])
     def exhibitUpdate():
         params = Exhibit(db, request, pops="id")
-        return json.dumps(params.updateById())
+        pat = request.app["pattern"]
+        return json.dumps(
+            params.updateById(orderBy="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0")))
 
     @bp.route("/exhibit/del", methods=["POST", "GET"])
     def exhibitDelete():
         params = Exhibit(db, request, pops="id")
-        return json.dumps(params.deleteById(foreign_keys=True))
+        pat = request.app["pattern"]
+        return json.dumps(
+            params.deleteById(orderBy="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0"),
+                              foreign_keys=True))
 
     @bp.route("/theme", methods=["POST", "GET"])
     def theme():
@@ -38,23 +47,31 @@ def add_route(bp, **f):
     @bp.route("/theme/list", methods=["POST", "GET"])
     def themeList():
         params = Theme(db, request, pops="id")
-        res = params.model.find("*", clause="order by number ASC,id DESC")
+        pat = request.app["pattern"]
+        res = params.model.find("*",
+                                clause="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0"))
         return json.dumps(res)
 
     @bp.route("/theme/add", methods=["POST", "GET"])
     def themeAdd():
         params = Theme(db, request, pops="id")
-        return json.dumps(params.insert())
+        pat = request.app["pattern"]
+        return json.dumps(
+            params.insert(orderBy="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0")))
 
     @bp.route("/theme/update", methods=["POST", "GET"])
     def themeUpdate():
         params = Theme(db, request, pops="id")
-        return json.dumps(params.updateById())
+        pat = request.app["pattern"]
+        return json.dumps(
+            params.updateById(orderBy="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0")))
 
     @bp.route("/theme/del", methods=["POST", "GET"])
     def themeDelete():
         params = Theme(db, request, pops="id")
-        res = params.deleteById(foreign_keys=True)
+        pat = request.app["pattern"]
+        res = params.deleteById(orderBy="where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0"),
+                                foreign_keys=True)
         if res["success"]:
             # 删除与其相关联的theme内容
             account = Account(db, request, pops="id")

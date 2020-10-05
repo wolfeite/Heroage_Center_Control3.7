@@ -11,6 +11,21 @@ function createContentApp(columns, url) {
         }
         linkForm.find(".form-group.clearfix").html(linksStr)
     }
+    var refreshThemes = function (themes) {
+        if (themes.length == 0) {
+            alert("没有可以选择的主题！")
+            return false
+        }
+        var themesStr = ""
+        for (var i in themes) {
+            var theme = themes[i], id = theme.id
+            themesStr += '<div class="icheck-primary d-inline">' +
+                '<input type="checkbox" id="themes_checkbox_' + id + '" value=' + id + '>' +
+                '<label for="themes_checkbox_' + id + '">' + theme.name + '&nbsp;&nbsp;&nbsp;&nbsp;</label>' +
+                '</div>'
+        }
+        patternForm.find(".form-group.clearfix").html(themesStr)
+    }
     exhibitSelector.on("change", function (e) {
         //var options = exhibitSelector.find("option:selected").val(); //获取选中的项
         var options = exhibitSelector.val()
@@ -29,11 +44,20 @@ function createContentApp(columns, url) {
         console.log(">>", res)
         var data = res.data
         exhibitSelector.html("")
+        if (data.length == 0) {
+            alert("请先配置展区")
+            return false
+        }
         for (var i  in data) {
             var item = data[i], val = item.id, name = item.name
             exhibitSelector.append($.parseHTML("<option value='" + val + "'>" + name + "</option>"))
         }
         exhibitSelector.trigger("change")
+    })
+
+    $.request({url: "/content/themeList"}, function (res) {
+        var data = res.data
+        refreshThemes(data)
     })
 
     var addForm = $("#addModal form")
@@ -54,6 +78,11 @@ function createContentApp(columns, url) {
     var linksOpt = $("#linksOpt")
     var linksOptClose = $("#linksOptClose")
     var linkModalBtn = $("#linksModalBtn")
+
+    var patternForm = $("#patternModal form")
+    var patternOpt = $("#patternOpt")
+    var patternOptClose = $("#patternOptClose")
+    var patternModalBtn = $("#patternModalBtn")
 
     $('.select2').select2()
     jsGrid.locale("zh-cn");
@@ -108,11 +137,13 @@ function createContentApp(columns, url) {
                 return ""
             },
             itemTemplate: function (value, item) {
+                var btnStr = parseInt($.pattern()) == 0 ? '<button type="button" class="btn btn-default" data-type="theme">主题</button>' : ''
                 return $('<div class="btn-group">' +
                     '<button type="button" class="btn btn-default" data-type="update">修改</button>' +
                     '<button type="button" class="btn btn-default" data-type="delete">删除</button>' +
                     '<button type="button" class="btn btn-default" data-type="detail">详情</button>' +
                     '<button type="button" class="btn btn-default" data-type="link">关联</button>' +
+                    btnStr +
                     '<button type="button" class="btn btn-default" data-type="vary">同步</button>' +
                     '</div>').on("click", "button",
                     function (e) {
@@ -145,6 +176,12 @@ function createContentApp(columns, url) {
                             delForm.find("[name='exhibit']").val(item.exhibit)
                             delModalBtn.trigger("click")
                         } else if (type == "detail") {
+                            var themes = item.themes, pat = $.pattern()
+                            console.log("当前平台模式为：", pat)
+                            if (themes == "" && parseInt(pat) == 0) {
+                                alert("请先选择所需的主题！")
+                                return false
+                            }
                             window.location.href = "/content/detail?id=" + item.id + "&name=" + item.name
                         } else if (type == "vary") {
                             $.request({
@@ -163,13 +200,27 @@ function createContentApp(columns, url) {
                             linkForm.find("[name='id']").val(item.id)
                             linkForm.find("[name='exhibit']").val(item.exhibit)
                             var show = {display: "inline-block"}, hidden = {display: "none"}
+                            //隐藏自己
                             linkForm.find("#checkbox_" + item.id).css(hidden).siblings().css(hidden).parents(".icheck-primary.d-inline").css(hidden).siblings().css(show).children().css(show)
+                            //选中已选项
                             var links = JSON.parse(item.links)
                             for (var i in links) {
                                 var linkId = links[i]
                                 linkForm.find("#checkbox_" + linkId).prop("checked", true)
                             }
                             linkModalBtn.trigger("click")
+                        } else if (type == "theme") {
+                            var row = controller.clients.indexOf(item)
+                            patternOpt.attr("row", row)
+                            patternForm[0].reset()
+                            patternForm.find("[name='id']").val(item.id)
+                            patternForm.find("[name='exhibit']").val(item.exhibit)
+                            var themes = !item.themes ? [] : item.themes.split(",")
+                            for (var i in themes) {
+                                var themeId = themes[i]
+                                patternForm.find("#themes_checkbox_" + themeId).prop("checked", true)
+                            }
+                            patternModalBtn.trigger("click")
                         }
 
                         //$.request({url: "/set/exhibit/add", data: {name: "大厅", number: 3}}, function (res) {
@@ -258,6 +309,32 @@ function createContentApp(columns, url) {
             controller.clients[index].links = res.data
             gridList.jsGrid("loadData");
             linksOptClose.trigger("click")
+        })
+    })
+    //主题
+    patternOpt.on("click", function (e) {
+        var check_list = [], nocheck_list = [], $el = $(this)
+        patternForm.find("input[type='checkbox']:checked").each(function () {
+            check_list.push($(this).val())
+        })
+        patternForm.find("input[type='checkbox']:not(:checked)").each(function () {
+            nocheck_list.push($(this).val())
+        })
+        console.log(check_list.join(","), ">>>id:", patternForm.find("[name='id']").val())
+        if (check_list.length == 0) {
+            alert("至少需要选择一个主题！")
+            return false
+        }
+        $.request({
+            url: url.themes,
+            data: {"themes": check_list.join(","), "id": patternForm.find("[name='id']").val()},
+            type: "post",
+            tip: true
+        }, function (res) {
+            var index = parseInt($el.attr("row"))
+            controller.clients[index].themes = res.data
+            gridList.jsGrid("loadData");
+            patternOptClose.trigger("click")
         })
     })
 }

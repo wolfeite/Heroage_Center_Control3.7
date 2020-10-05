@@ -107,10 +107,11 @@ function createDevApp(columns, url) {
                 return ""
             },
             itemTemplate: function (value, item) {
+                var btnStr = parseInt($.pattern()) == 0 ? '<button type="button" class="btn btn-default" data-type="theme">主题</button>' : ''
                 return $('<div class="btn-group">' +
                     '<button type="button" class="btn btn-default" data-type="update">修改</button>' +
                     '<button type="button" class="btn btn-default" data-type="delete">删除</button>' +
-                    '<button type="button" class="btn btn-default" data-type="theme">主题</button>' +
+                    btnStr +
                     '</div>').on("click", "button",
                     function (e) {
                         e.stopPropagation();

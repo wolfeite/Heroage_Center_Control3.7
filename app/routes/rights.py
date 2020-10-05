@@ -23,11 +23,14 @@ def add_route(bp, **f):
     @bp.route("/list", methods=["POST", "GET"])
     def rightsList():
         account = Account(db, request, pops="id")
+        pat = request.app["pattern"]
         orderBy = "order by number ASC,id DESC"
         # clause = "where name='{0}' and password='{1}'".format(author.name, author.password)
         res = account.model.find("id,number,nickname,rank,theme", clause=orderBy)
         params = Theme(db, request, pops="id")
-        theme = params.model.find("id,name")
+        strOrder = "where {0} order by number ASC,id DESC".format("id>0" if pat == 0 else "id=0")
+        theme = params.model.find("id,name", clause=strOrder)
+        # theme = params.model.find("id,name")
         res["theme"] = theme["data"]
         # return json.dumps(res, default=lambda o: o.__dict__)
         print("res:>>", res)

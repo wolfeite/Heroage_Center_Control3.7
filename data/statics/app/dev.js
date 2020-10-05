@@ -17,6 +17,10 @@ function createDevApp(columns, url) {
         console.log(">>", res)
         var data = res.data
         exhibitSelector.html("")
+        if (data.length == 0) {
+            alert("请先配置展区")
+            return false
+        }
         for (var i  in data) {
             var item = data[i], val = item.id, name = item.name
             exhibitSelector.append($.parseHTML("<option value='" + val + "'>" + name + "</option>"))

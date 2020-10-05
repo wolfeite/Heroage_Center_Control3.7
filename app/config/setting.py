@@ -1,5 +1,9 @@
 PER_PAGE = 15
 INDEX = "/dev/lamp"
+# multiple 0多场景模式，single 1单场景模式
+PATTERN = 0
+# 是否允许修改
+CHANGE = False
 ASIDE = [
     {
         "title": "设备管理",
@@ -7,23 +11,23 @@ ASIDE = [
         "url": "/dev",
         "item": [
             {
-                "title": "光电管理",
+                "title": "光电配置",
                 "url": "/dev/lamp"
             },
             {
-                "title": "主机管理",
+                "title": "主机配置",
                 "url": "/dev/host"
             },
             {
-                "title": "红外管理",
+                "title": "红外配置",
                 "url": "/dev/infrared"
             },
             {
-                "title": "串口管理",
+                "title": "串口配置",
                 "url": "/dev/serial_port"
             },
             {
-                "title": "设备组管理",
+                "title": "设备部署",
                 "url": "/dev/groups"
             },
             {

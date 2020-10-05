@@ -57,8 +57,12 @@ function createDetailApp(contentId) {
             setPath(tab)
         }
     })
-    $.request({url: "/content/theme"}, function (res) {
+    $.request({url: "/content/theme", data: {id: contentId}}, function (res) {
         var data = res.data
+        if (data.length == 0) {
+            alert("请先配置需要的主题！")
+            return false
+        }
         themeSelector.html("")
         for (var i  in data) {
             var item = data[i], val = item.id, name = item.name

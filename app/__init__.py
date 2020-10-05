@@ -5,6 +5,8 @@ from app.config import setting
 def config_jinja(app):
     app.flask.add_template_global(app.config["ASIDE"], 'aside')
     app.flask.add_template_global(app.config["ENV"], 'env')
+    app.flask.add_template_global(app.config["CHANGE"], 'change')
+
     @app.flask.template_filter('parserPath')
     def parserPath(arr):
         res = []
@@ -14,15 +16,18 @@ def config_jinja(app):
 
 def config_db(app):
     db = app.attr["db"]
+    pat = app.config.get("PATTERN", 1)
     # 版本 version
     version = db.model("version", {
         "id": "integer not null primary key autoincrement unique",  # 主键
         "number": "integer default 1",
-        "time": "DATE DEFAULT (datetime('now','localtime'))"
+        "time": "DATE DEFAULT (datetime('now','localtime'))",
+        "pattern": "integer default 1",
     })
     versionRes = version.find("*", clause="where number=3.7")
     if len(versionRes["data"]) == 0:
-        version.insert({"number": "3.7"})
+        version.insert({"number": "3.7", "pattern": pat})
+    version.update({"pattern": pat}, clause="where number=3.7")
 
     from app.models.Account import Account
     # 账号 account
@@ -51,12 +56,20 @@ def config_db(app):
         "number": "integer default 1",  # 展厅序号
         "name": "text"  # 展厅名字
     })
+    exhibitRes = exhibit.find("*", clause="where id=0")
+    if len(exhibitRes["data"]) == 0:
+        exhibit.insert({"id": 0, "number": 0, "name": "默认展区"})
+
     # 主题管理
     theme = db.model("theme", {
         "id": "integer not null primary key autoincrement unique",  # 主键
         "number": "integer default 1",  # 主题序号
         "name": "text not null"  # 主题名字
     })
+    themeRes = theme.find("*", clause="where id=0")
+    if len(themeRes["data"]) == 0:
+        theme.insert({"id": 0, "number": 0, "name": "默认主题"})
+
     # 标签管理
     label = db.model("label", {
         "id": "integer not null primary key autoincrement unique",  # 主键
@@ -228,7 +241,8 @@ def config_db(app):
         "offset_y": "int",  # APP偏移Y
         "time": "DATE DEFAULT (datetime('now','localtime'))",  # 更新时间
         "links": "json default '[]'",  # 关联集合
-        "content_type": "text"  # 内容类型：包含第三方控制，复杂\简易模式
+        "content_type": "text",  # 内容类型：包含第三方控制，复杂\简易模式
+        "themes": "text default ''"  # 多场景主题集合
     })
     # 内容详情-视频
     content_video = db.model("content_video", {
@@ -327,8 +341,8 @@ def config_db(app):
 
 def config_app(app):
     app.config = (secure, setting)
-    config_jinja(app)
     config_db(app)
+    config_jinja(app)
     print(">>>>app.root_path:", app.flask.root_path)
     app.register_filter(filter.filter)
     app.register_router("dev", __name__, dev.add_route, url_prefix="/dev")

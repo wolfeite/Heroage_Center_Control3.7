@@ -26,9 +26,15 @@
         .pb-3, .py-3 {
             padding-bottom: 5px !important;
         }
+
+        .custom-select:disabled {
+            color: #6c757d;
+            background-color: #e9ecef;
+        }
     </style>
 </head>
-<body class="hold-transition sidebar-mini text-sm" url_for="{{ url_for('static',filename='') }}">
+<body class="hold-transition sidebar-mini text-sm" url_for="{{ url_for('static',filename='') }}"
+      pattern="{{ request.app["pattern"] }}">
 <div class="wrapper">
 
     <!-- Navbar -->
@@ -236,6 +242,17 @@
                 <h5>操作项：</h5>
                 <div class="info">
                     <a href="#" class="d-block" style="font-size: 12px; padding: 2px 0" id="syncFile">同步数据</a>
+                </div>
+                <br>
+                <h5>平台模式：</h5>
+                <div class="info">
+                    <div class="form-group">
+                        <label>{{ "请选择" if change else "不可修改" }}</label>
+                        <select class="form-control" id="model_platform" {{ "" if change else "disabled" }}>
+                            <option value=0 {{ "selected" if pattern == 0 else "" }}>多场景模式</option>
+                            <option value=1 {{ "selected" if pattern == 1 else "" }}>单场景模式</option>
+                        </select>
+                    </div>
                 </div>
             {% endblock %}
         </div>

@@ -33,12 +33,26 @@ def filter(flaskApp, **f):
     @flaskApp.before_request
     def parserAside():
         # rootAside = copy.deepcopy(flaskApp.config["ASIDE"])
-        aside = flaskApp.config["ASIDE"]
+        aside = copy.deepcopy(flaskApp.config["ASIDE"])
         rootAside = []
+        request.app = {}
+
+        # 获取平台模式
+        version = f["db"].models["version"]
+        res = version.find("*", clause="where number=3.7")
+        pat = int(1 if len(res["data"]) == 0 else res["data"][0].get("pattern", 1))
+        print("当前平台模式为：", pat)
+        flaskApp.add_template_global(pat, 'pattern')
+        request.app["pattern"] = pat
+        if pat == 1:
+            for item in aside[3]["item"][:]:
+                if not item["url"].endswith("label"):
+                    aside[3]["item"].remove(item)
+
         user = session.get("user")
         if user:
             rootAside = [aside[1], aside[4]] if user["rank"] < 800 else aside
-        request.app = {}
+
         request.app["aside"] = rootAside
         request.app["root"] = flaskApp.root_path
         request.app["pathsName"] = []

@@ -96,7 +96,10 @@
                 var url_for = $body.attr("url_for");
                 return url_for + path
             }
-        }()
+        }(),
+        pattern: function () {
+            return $("body").attr("pattern");
+        }
     })
 
     var asideLeft = $("#asideLeft")
@@ -121,6 +124,7 @@
         "progressBar": true,
         "timeOut": "1000"
     }
+
 }(jQuery)
 
 
@@ -129,11 +133,28 @@ $(function () {
 });
 
 $(document).ready(function () {
+    versionUpdate = "/api/update/"
+    $platform = $("#model_platform")
+    var updatePlatform = function (text_suc, text_fail, cb) {
+        opt = $platform.val()
+        console.log("获取平台模式为>>>：", opt)
+        $.request({url: versionUpdate + opt}, function (res) {
+            res.success ? toastr.success(text_suc) : toastr.error(text_fail)
+            // console.log("设备及平台模式更新成功！")
+            cb && cb(res)
+        })
+    }
+
+    $platform.on("change", function (e) {
+        updatePlatform("平台模式更新成功！", "模式更新失败！", function (res) {
+            setTimeout(function () {
+                location.reload()
+            }, 1000)
+        })
+    })
     var asideDev = $("#asideLeftList").children()[0]
     $("[href='#']", asideDev).on("click", function (e) {
-        $.request({url: "/api/update", tip: true}, function (res) {
-            console.log("设备更新成功！")
-        })
+        updatePlatform("设备更新成功！", "设备更新失败！")
     })
     //window.bsCustomFileInput && bsCustomFileInput.init();
 });
